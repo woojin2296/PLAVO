@@ -1,3 +1,4 @@
+import { text } from "stream/consumers";
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -10,7 +11,15 @@ const config: Config = {
   theme: {
   	extend: {
   		colors: {
-  			background: 'hsl(var(--background))',
+  			background: '#F3F4F6',
+			icon_default: '#B1B9C2',
+			icon_selected: '#191D28',
+			text_default: '#28303F',
+			text_sub: '#848792',
+			color_main1: '#3182F7',
+			color_main2: '#01477E',
+			color_main3: '#A8C66C',
+			
   			foreground: 'hsl(var(--foreground))',
   			card: {
   				DEFAULT: 'hsl(var(--card))',

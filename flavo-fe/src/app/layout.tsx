@@ -13,8 +13,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="p-4 bg-[#F3F4F6]">
-        {children}
+      <body className="bg-[#F3F4F6]">
+        <div className="p-4">{children}</div>
       </body>
     </html>
   );
