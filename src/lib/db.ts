@@ -51,7 +51,8 @@ db.exec(`
     additional_practice_recommendations_for_improvement_pronunciation_practice_materials TEXT,
     additional_practice_recommendations_for_improvement_speed_control_practice TEXT,
     recommended_next_steps_set_next_goals TEXT,
-    content_feedback_feedback_and_improvements_on_content TEXT
+    content_feedback_feedback_and_improvements_on_content TEXT,
+    pose_list TEXT
   );
 `);
 

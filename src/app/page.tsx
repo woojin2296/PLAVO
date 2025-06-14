@@ -38,13 +38,13 @@ export default function Page() {
     }
 
     fetch("/api/user/status?sub=" + sessionStorage.getItem("user_sub"))
-    .then((response) => response.json())
-    .then((data: UserStatus) => {
-      setUserStatusData(data);
-    })
-    .catch((error) => {
-      console.error("Error fetching user status:", error);
-    });
+      .then((response) => response.json())
+      .then((data: UserStatus) => {
+        setUserStatusData(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching user status:", error);
+      });
 
     fetch("/api/project/list?sub=" + sessionStorage.getItem("user_sub"))
     .then((response) => response.json())

@@ -52,18 +52,31 @@ export default function Page() {
           additional_practice_recommendations_for_improvement_speed_control_practice: result.speech_coaching_report.additional_practice_recommendations_for_improvement.speed_control_practice,
           recommended_next_steps_set_next_goals: result.speech_coaching_report.recommended_next_steps.set_next_goals,
           content_feedback_feedback_and_improvements_on_content: result.speech_coaching_report.content_feedback.feedback_and_improvements_on_content,
+          pose_list: JSON.stringify(result.action_report)
         })
       });
 
-      
-
       console.log("Practice created:", await res2.json());
+
+      const res3 = await fetch("/api/project?project_uuid=" + project_uuid, {
+        method: "PATCH",
+        body: JSON.stringify({
+          practice_count: 1,
+          total_score: total_score,
+          speed_score: speed_score,
+          pose_score: pose_score,
+          pronunciation_score: pronunciation_score
+        })
+      });
+      
+      console.log("Project updated:", await res3.json());
+
       router.push("/project/" + project_uuid + "/practice/" + practice_id);
     }
 
     setTimeout(() => {
       fetchData();
-    }, 1000);
+    }, 3000);
   }, []);
   
   return (

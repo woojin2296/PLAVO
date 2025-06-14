@@ -36,6 +36,7 @@ export default function Page({ params }: { params: { uuid: string } }) {
   const [time, setTime] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [sttResults, setSttResults] = useState<any>([]);
+  const [open, setOpen] = useState(false);
 
   const onRecordingStart = () => {
     setSttResults([]);
@@ -63,7 +64,7 @@ export default function Page({ params }: { params: { uuid: string } }) {
     <div className="flex flex-col bg-black">
       <ProjectRecordHeader uuid={params.uuid} />
       <div className="pt-20 flex flex-col gap-4 bg-black">
-        <ControlSection isRecording={isRecording} onRecordingStart={onRecordingStart} onRecordingEnd={onRecordingEnd} time={time} uuid={params.uuid} />
+        <ControlSection open={open} setOpen={setOpen} isRecording={isRecording} setIsRecording={setIsRecording} onRecordingStart={onRecordingStart} onRecordingEnd={onRecordingEnd} time={time} uuid={params.uuid} />
         <STTSection isRecording={isRecording} onSttResults={setSttResults} />
       </div>
       <ScriptSection sttResults={sttResults} />
@@ -82,20 +83,57 @@ function ProjectRecordHeader({ uuid }: { uuid: string }) {
 }
 
 function ControlSection(
-  { isRecording, onRecordingStart, onRecordingEnd, time, uuid }:
-    { isRecording: boolean, onRecordingStart: () => void, onRecordingEnd: () => void, time: number, uuid: string }
+  { isRecording, setIsRecording, onRecordingStart, onRecordingEnd, time, uuid, open, setOpen }:
+    { isRecording: boolean, setIsRecording: (value: boolean) => void, onRecordingStart: () => void, onRecordingEnd: () => void, time: number, uuid: string, open: boolean, setOpen: (state: boolean) => void }
 ) {
+
+  const connectAndSubscribe = async () => {
+    try {
+
+      const device = await navigator.bluetooth.requestDevice({
+        filters: [{ name: 'Arduino' }],
+        optionalServices: ['12345678-1234-1234-1234-1234567890ab']
+      });
+      
+      const server = await device.gatt.connect();
+      const service = await server.getPrimaryService('12345678-1234-1234-1234-1234567890ab');
+      const characteristic = await service.getCharacteristic('abcdefab-1234-1234-1234-abcdefabcdef');
+      
+      await characteristic.startNotifications();
+      
+      characteristic.addEventListener('characteristicvaluechanged', (event) => {
+        const value = event.target.value;
+        const bytes = new Uint8Array(value.buffer);
+        console.log('📥 수신됨:', bytes);
+        if (!isRecording) setIsRecording(true);
+        else setOpen(true);
+      });
+
+      console.log("✅ Notify 수신 대기 중");
+
+    } catch (err: any) {
+      console.error("❌ 블루투스 오류:", err);
+    }
+  };
+
   return (
     <div className="flex flex-row gap-4">
       {
         !isRecording ? (
-          <Card onClick={onRecordingStart} className="flex flex-col items-center justify-center w-1/2 bg-color_main1 border-none">
-            <CardTitle className="text-3xl text-white">
-              시작하기
-            </CardTitle>
-          </Card>
+          <>
+            <Card onClick={connectAndSubscribe} className="flex flex-col items-center justify-center w-1/4 bg-color_main1 border-none">
+              <CardTitle className="text-3xl text-white">
+                블루투스 연결
+              </CardTitle>
+            </Card>
+            <Card onClick={onRecordingStart} className="flex flex-col items-center justify-center w-1/4 bg-color_main1 border-none">
+              <CardTitle className="text-3xl text-white">
+                시작하기
+              </CardTitle>
+            </Card>
+          </>
         ) : (
-          <EndButton onRecordingEnd={onRecordingEnd} uuid={uuid} />
+          <EndButton onRecordingEnd={onRecordingEnd} uuid={uuid} open={open} setOpen={setOpen} />
         )
       }
       <Card className="flex items-center w-1/2">
@@ -113,10 +151,9 @@ function ControlSection(
 }
 
 function EndButton(
-  { onRecordingEnd, uuid }:
-    { onRecordingEnd: () => void, uuid: string }
+  { onRecordingEnd, uuid, open, setOpen }:
+    { onRecordingEnd: () => void, uuid: string, open: boolean, setOpen: (state: boolean) => void }
 ) {
-  const [open, setOpen] = useState(false);
   return (
     <Dialog open={open} onOpenChange={(state) => { setOpen(state); onRecordingEnd() }}>
       <DialogTrigger asChild>

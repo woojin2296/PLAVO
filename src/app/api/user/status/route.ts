@@ -16,6 +16,8 @@ export async function GET(req: Request) {
       WHERE user_id = ? ORDER BY last_practiced_at DESC
     `).all(sub) as ProjectInfo[];
 
+    console.log("Projects fetched for user:", sub, "Count:", projects.length);
+
     const practices = db.prepare(`
       SELECT * FROM practices 
       WHERE user_id = ? ORDER BY created_at DESC

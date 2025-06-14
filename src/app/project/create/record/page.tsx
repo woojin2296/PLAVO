@@ -250,3 +250,4 @@ function ScriptRow({ data }: { data: { startMs: string, endMs: string, text: str
     </div>
   )
 }
+

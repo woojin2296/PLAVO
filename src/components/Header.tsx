@@ -25,7 +25,7 @@ export function ProjectListHeader() {
 export function ProjectHeader() {
   return (
     <header className="fixed top-0 left-0 px-8 py-4 w-full h-24 z-50 bg-[#F3F4F6] flex items-center justify-between">
-      <Link href={"/project/list"}><ChevronLeft className="w-8 h-8 text-icon_default" /></Link>
+      <Link href={"/"}><ChevronLeft className="w-8 h-8 text-icon_default" /></Link>
       <span className="text-2xl text-icon_default">프로젝트</span>
       <Link href={"/"}><House className="w-8 h-8 text-icon_default" /></Link>
     </header>
