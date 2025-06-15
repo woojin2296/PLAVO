@@ -141,7 +141,7 @@ function ProjectInfoSection({ data }: { data: any }) {
             </div>
             <div className="flex items-center gap-8 pr-8">
               <CardDescription className="text-xl py-4">발음 정확도</CardDescription>
-              <CardTitle className="text-4xl">{data.speed_score}</CardTitle>
+              <CardTitle className="text-4xl">{data.pronunciation_score}</CardTitle>
             </div>
             <div className="flex items-center gap-8 pr-8">
               <CardDescription className="text-xl py-4">제스처 점수</CardDescription>
