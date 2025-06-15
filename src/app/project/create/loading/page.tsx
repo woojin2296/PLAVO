@@ -14,7 +14,7 @@ export default function Page() {
       const res = await fetch("http://soboroo.tplinkdns.com:8000/transcribe/" + uuid, { method: "POST" });
       const result = await res.json();
       
-      const res2 = await fetch("/api/project", {
+      const re2 = await fetch("/api/project", {
         method: "POST",
         body: JSON.stringify({
           uuid: sessionStorage.getItem("project_uuid"),
@@ -26,6 +26,7 @@ export default function Page() {
           script: result.text,
         })
       });
+      console.log("Project created:", await re2.json());
 
       router.push("/project/" + uuid);
 

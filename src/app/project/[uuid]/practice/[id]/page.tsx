@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ChevronLeft, House } from "lucide-react";
 import Link from "next/link";
@@ -114,7 +114,7 @@ export default function Page({ params }: { params: { uuid : string, id: string }
   );
 }
 
-export function ProjectHeader({uuid}: { uuid: string }) {
+function ProjectHeader({uuid}: { uuid: string }) {
   return (
     <header className="fixed top-0 left-0 px-8 py-4 w-full h-24 z-50 bg-[#F3F4F6] flex items-center justify-between">
       <Link href={`/project/${uuid}`}><ChevronLeft className="w-8 h-8 text-icon_default" /></Link>
@@ -124,7 +124,7 @@ export function ProjectHeader({uuid}: { uuid: string }) {
   );
 }
 
-export function ProjectInfoSection({ data }: { data: any }) {
+function ProjectInfoSection({ data }: { data: any }) {
   return (
     <Card className="flex flex-col gap-0 text-text_default">
       <CardContent className="flex items-center">

@@ -30,18 +30,33 @@ function ProjectCreateHeader() {
 }
 
 function ProjectInfoInputSection() {
-  const [inputValue, setInputValue] = React.useState<any>({
-    projectName: sessionStorage.getItem("project_name") || "",
-    projectDescription: sessionStorage.getItem("project_description") || "",
-    dueDate: sessionStorage.getItem("project_due_date") || "",
-    goalTime: parseInt(sessionStorage.getItem("project_goal_time") || "0"),
+  const [inputValue, setInputValue] = useState<any>({
+    projectName: "",
+    projectDescription: "",
+    dueDate: "",
+    goalTime: 0,
   });
-
+  
+  // 브라우저에서만 초기 sessionStorage 값을 가져오기
   useEffect(() => {
-    sessionStorage.setItem("project_name", inputValue.projectName);
-    sessionStorage.setItem("project_description", inputValue.projectDescription);
-    sessionStorage.setItem("project_due_date", inputValue.dueDate);
-    sessionStorage.setItem("project_goal_time", inputValue.goalTime);
+    if (typeof window !== "undefined") {
+      setInputValue({
+        projectName: sessionStorage.getItem("project_name") || "",
+        projectDescription: sessionStorage.getItem("project_description") || "",
+        dueDate: sessionStorage.getItem("project_due_date") || "",
+        goalTime: parseInt(sessionStorage.getItem("project_goal_time") || "0"),
+      });
+    }
+  }, []);
+  
+  // 값이 변경될 때 sessionStorage에 동기화
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("project_name", inputValue.projectName);
+      sessionStorage.setItem("project_description", inputValue.projectDescription);
+      sessionStorage.setItem("project_due_date", inputValue.dueDate);
+      sessionStorage.setItem("project_goal_time", String(inputValue.goalTime));
+    }
   }, [inputValue]);
 
   return (

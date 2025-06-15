@@ -79,7 +79,6 @@ export async function PATCH(req: Request) {
             return NextResponse.json({ error: "Project not found" }, { status: 404 });
         }
 
-        const change_practice_count = project_pre.practice_count + 1;
         const change_total_score = (project_pre.total_score * project_pre.practice_count + total_score) / (project_pre.practice_count + 1);
         const change_speed_score = (project_pre.speed_score * project_pre.practice_count + speed_score) / (project_pre.practice_count + 1);
         const change_pose_score = (project_pre.pose_score * project_pre.practice_count + pose_score) / (project_pre.practice_count + 1);

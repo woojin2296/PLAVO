@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { PracticeCountChart, ProjectCountChart, ProjectPinSection, UpcomingProjectSection } from "@/components/Home";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { UserStatus } from "@/domain/types";
 import { useRouter } from "next/navigation";
 import { ChartPie, CircleUserRound, ListChecks, SquarePlus } from "lucide-react";
@@ -13,10 +13,9 @@ import Link from "next/link";
 export default function Page() {
   const router = useRouter();
 
-  const user_name = sessionStorage.getItem("user_name");
-
-  const [UserStatusData, setUserStatusData] = React.useState<UserStatus>({
-    name: user_name,
+  const [user_name, setUserName] = useState("");
+  const [UserStatusData, setUserStatusData] = useState<UserStatus>({
+    name: "",
     rank: 0,
     total_projects: 0,
     completed_projects: 0,
@@ -26,34 +25,37 @@ export default function Page() {
     pronunciation_score: 0,
     pose_score: 0,
     qna_score: 0,
-  } as UserStatus);
-  const [PinedProjectData] = React.useState([]);
-  const [UpcomingProjectData, setUpcomingProjectData] = React.useState([]);
+  });
+
+  const [PinedProjectData] = useState([]);
+  const [UpcomingProjectData, setUpcomingProjectData] = useState([]);
 
   useEffect(() => {
-    const userSub = sessionStorage.getItem("user_name");
-    if (!userSub) {
+    if (typeof window === "undefined") return;
+
+    const userSub = sessionStorage.getItem("user_sub");
+    const name = sessionStorage.getItem("user_name");
+
+    if (!userSub || !name) {
       router.push("/login");
       return;
     }
 
-    fetch("/api/user/status?sub=" + sessionStorage.getItem("user_sub"))
-      .then((response) => response.json())
+    setUserName(name);
+
+    fetch(`/api/user/status?sub=${userSub}`)
+      .then(res => res.json())
       .then((data: UserStatus) => {
         setUserStatusData(data);
       })
-      .catch((error) => {
-        console.error("Error fetching user status:", error);
-      });
+      .catch(console.error);
 
-    fetch("/api/project/list?sub=" + sessionStorage.getItem("user_sub"))
-    .then((response) => response.json())
-    .then((data) => {
-      setUpcomingProjectData(data.projects);
-    })
-    .catch((error) => {
-      console.error("Error fetching upcoming projects:", error);
-    });
+    fetch(`/api/project/list?sub=${userSub}`)
+      .then(res => res.json())
+      .then((data) => {
+        setUpcomingProjectData(data.projects);
+      })
+      .catch(console.error);
   }, []);
 
   return (
@@ -140,7 +142,7 @@ export default function Page() {
   );
 }
 
-export function HomeHeader() {
+function HomeHeader() {
   return (
     <header className="fixed top-0 left-0 px-8 py-4 w-full h-24 z-50 bg-[#F3F4F6] flex items-center justify-between">
       <Image src="/logo-sm.svg" alt="Logo" width={45} height={45} />

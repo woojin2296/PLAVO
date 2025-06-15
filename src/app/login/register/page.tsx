@@ -79,8 +79,6 @@ function TextInputCard({
 }: {
   onValueChange: (v: string) => void;
 }) {
-  const [open, setOpen] = useState(false);
-
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const [transcript, setTranscript] = useState("눌러서 음성 입력 시작");
 

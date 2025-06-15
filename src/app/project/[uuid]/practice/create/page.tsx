@@ -250,7 +250,7 @@ function STTSection({
             const outputData = new DataView(buffer);
 
             for (let i = 0; i < inputData.length; i++) {
-              let s = Math.max(-1, Math.min(1, inputData[i]));
+              const s = Math.max(-1, Math.min(1, inputData[i]));
               outputData.setInt16(i * 2, s < 0 ? s * 32768 : s * 32767, true);
             }
 

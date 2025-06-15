@@ -84,7 +84,7 @@ export default function Page() {
       <ProjectCreateHeader />
       <div className="pt-20 flex flex-col items-center justify-center h-[1500px]">
         <div className="flex items-end justify-between text-4xl pt-8 p-4 text-text_default">
-          프로젝트를 생성하는 중입니다!
+          연습을 생성하는 중입니다!
         </div>
         <div className="flex items-end justify-between text-4xl pt-8 p-4 text-text_default">
           잠시만 기다려주세요.
@@ -102,7 +102,7 @@ export default function Page() {
           데이터베이스에 저장하는 중...
         </div>
         <div className="flex items-end justify-between text-4xl pt-8 p-4 text-text_sub">
-          프로젝트를 생성하는 중...
+          연습을 생성하는 중...
         </div>
       </div>
     </div>

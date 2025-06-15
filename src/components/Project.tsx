@@ -2,24 +2,16 @@
 
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  CartesianGrid,
-  LabelList,
-  Line,
-  LineChart,
-} from "recharts"
 
-import { ChartConfig, ChartContainer } from "@/components/ui/chart"
-import { ChevronRight, FileQuestion, MessageCirclePlus, MessageCircleQuestion, Pin, Presentation, ScrollText, Settings, SquarePlus, TrendingUp } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Separator } from "./ui/separator";
 import React from "react";
 import Link from "next/link";
-import { PracticeInfo, ProjectInfo, QnAInfo } from "@/domain/types";
+import { QnAInfo } from "@/domain/types";
 
 export function RecentQnASection() {
   const data = []

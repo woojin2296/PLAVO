@@ -1,5 +1,5 @@
 import { ChevronRight } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "./ui/card";
+import { Card, CardHeader, CardTitle, CardDescription } from "./ui/card";
 import { Separator } from "./ui/separator";
 import Link from "next/link";
 import { ProjectInfo } from "@/domain/types";

@@ -5,7 +5,6 @@ import { ProfileScoreChart, RecentQnASection } from "@/components/Project";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { Separator } from "@/components/ui/separator";
-import { PracticeInfo } from "@/domain/types";
 import { ChartPie, ChevronRight, MessageCirclePlus, ScrollText, Settings, SquarePlus } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -133,7 +132,7 @@ export default function Page({ params }: { params: { uuid: string } }) {
     </div>
   );
 }
-export function RecentPracticeCard({ data }: { data: any }) {
+function RecentPracticeCard({ data }: { data: any }) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between py-6 pr-0">
@@ -165,7 +164,7 @@ export function RecentPracticeCard({ data }: { data: any }) {
   )
 }
 
-export function PracticeScoreChart({data}: { data: any }) {
+function PracticeScoreChart({data}: { data: any }) {
   const chartData = [
     { practice_id: "1", score: data[5]?.total_score || 0 },
     { practice_id: "2", score: data[4]?.total_score || 0 },

@@ -8,12 +8,16 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 export default function Page() {
-  const goalTime = sessionStorage.getItem("project_goal_time") || "";
-
+  const [goalTime, setGoalTime] = useState("");
   const timer = useRef<NodeJS.Timeout | null>(null);
   const [time, setTime] = useState(parseInt(goalTime) * 60 || 0);
   const [isRecording, setIsRecording] = useState(false);
   const [sttResults, setSttResults] = useState<any>([]);
+
+  useEffect(() => {
+    const goal = sessionStorage.getItem("project_goal_time") || "1";
+    setGoalTime(goal);
+  }, []);
 
   const onRecordingStart = () => {
     setSttResults([]);
@@ -75,7 +79,7 @@ function ControlSection(
             </CardTitle>
           </Card>
         ) : (
-          <EndButton onRecordingStart={onRecordingStart} onRecordingEnd={onRecordingEnd} />
+          <EndButton onRecordingEnd={onRecordingEnd} />
         )
       }
       <Card className="flex items-center w-1/2">
@@ -93,8 +97,8 @@ function ControlSection(
 }
 
 function EndButton(
-  { onRecordingStart, onRecordingEnd }: 
-  { onRecordingStart: () => void, onRecordingEnd: () => void }
+  { onRecordingEnd }: 
+  { onRecordingEnd: () => void }
 ) {
   const [open, setOpen] = useState(false);
   return (
@@ -191,7 +195,7 @@ function STTSection({ isRecording, onSttResults }: { isRecording: boolean, onStt
             const outputData = new DataView(buffer);
             
             for (let i = 0; i < inputData.length; i++) {
-              let s = Math.max(-1, Math.min(1, inputData[i]));
+              const s = Math.max(-1, Math.min(1, inputData[i]));
               outputData.setInt16(i * 2, s < 0 ? s * 32768 : s * 32767, true);
             }
             
