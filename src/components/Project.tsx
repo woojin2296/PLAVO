@@ -85,19 +85,19 @@ export function ProfileScoreChart({ total_score, speed_score, pose_score, qna_sc
       <div className="grid grid-cols-2">
         <div className="flex items-center justify-between pr-8">
           <CardDescription className="text-xl py-4">발화 속도</CardDescription>
-          <CardTitle className="text-4xl">{speed_score}</CardTitle>
+          <CardTitle className="text-4xl">{Math.round(speed_score)}</CardTitle>
         </div>
         <div className="flex items-center justify-between pr-8">
           <CardDescription className="text-xl py-4">발음 정확도</CardDescription>
-          <CardTitle className="text-4xl">{speed_score}</CardTitle>
+          <CardTitle className="text-4xl">{Math.round(speed_score)}</CardTitle>
         </div>
         <div className="flex items-center justify-between pr-8">
           <CardDescription className="text-xl py-4">제스처 일치도</CardDescription>
-          <CardTitle className="text-4xl">{pose_score}</CardTitle>
+          <CardTitle className="text-4xl">{Math.round(pose_score)}</CardTitle>
         </div>
         <div className="flex items-center justify-between pr-8">
           <CardDescription className="text-xl py-4">질의응답 정확도</CardDescription>
-          <CardTitle className="text-4xl">{qna_score}</CardTitle>
+          <CardTitle className="text-4xl">{Math.round(qna_score)}</CardTitle>
         </div>
       </div>
     </>

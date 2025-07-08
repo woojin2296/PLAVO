@@ -52,21 +52,6 @@ export default function Page() {
         <div className="flex items-end justify-between text-4xl pt-8 p-4 text-text_default">
           잠시만 기다려주세요.
         </div>
-        <div className="flex items-end justify-between text-4xl pt-8 p-4 text-text_sub">
-          파일을 준비하는 중...
-        </div>
-        <div className="flex items-end justify-between text-4xl pt-8 p-4 text-text_sub">
-          파일을 서버로 보내는 중...
-        </div>
-        <div className="flex items-end justify-between text-4xl pt-8 p-4 text-text_sub">
-          파일을 처리하는 중...
-        </div>
-        <div className="flex items-end justify-between text-4xl pt-8 p-4 text-text_sub">
-          데이터베이스에 저장하는 중...
-        </div>
-        <div className="flex items-end justify-between text-4xl pt-8 p-4 text-text_sub">
-          프로젝트를 생성하는 중...
-        </div>
       </div>
     </div>
   );

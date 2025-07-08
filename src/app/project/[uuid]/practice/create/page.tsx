@@ -1,13 +1,17 @@
 "use client";
 
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { ChevronLeft, House } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import Image from 'next/image'; // Ensure correct import for Image component
 
 export default function Page({ params }: { params: { uuid: string } }) {
+  const timer = useRef<NodeJS.Timeout | null>(null);
+  const [time, setTime] = useState(0);
+  const [isRecording, setIsRecording] = useState(false);
+  const [sttResults, setSttResults] = useState<any>([]);
+
   useEffect(() => {
     const fetchData = async () => {
       await fetch(`/api/project?uuid=${params.uuid}`)
@@ -31,12 +35,6 @@ export default function Page({ params }: { params: { uuid: string } }) {
       sessionStorage.removeItem("project_goal_time");
     };
   }, []);
-
-  const timer = useRef<NodeJS.Timeout | null>(null);
-  const [time, setTime] = useState(0);
-  const [isRecording, setIsRecording] = useState(false);
-  const [sttResults, setSttResults] = useState<any>([]);
-  const [open, setOpen] = useState(false);
 
   const onRecordingStart = () => {
     setSttResults([]);
@@ -64,10 +62,10 @@ export default function Page({ params }: { params: { uuid: string } }) {
     <div className="flex flex-col bg-black">
       <ProjectRecordHeader uuid={params.uuid} />
       <div className="pt-20 flex flex-col gap-4 bg-black">
-        <ControlSection open={open} setOpen={setOpen} isRecording={isRecording} setIsRecording={setIsRecording} onRecordingStart={onRecordingStart} onRecordingEnd={onRecordingEnd} time={time} uuid={params.uuid} />
+        <ControlSection isRecording={isRecording} setIsRecording={setIsRecording} onRecordingStart={onRecordingStart} onRecordingEnd={onRecordingEnd} time={time} uuid={params.uuid} />
         <STTSection isRecording={isRecording} onSttResults={setSttResults} />
       </div>
-      <ScriptSection sttResults={sttResults} />
+      <PPTSection />
     </div>
   );
 }
@@ -83,24 +81,23 @@ function ProjectRecordHeader({ uuid }: { uuid: string }) {
 }
 
 function ControlSection(
-  { isRecording, setIsRecording, onRecordingStart, onRecordingEnd, time, uuid, open, setOpen }:
-    { isRecording: boolean, setIsRecording: (value: boolean) => void, onRecordingStart: () => void, onRecordingEnd: () => void, time: number, uuid: string, open: boolean, setOpen: (state: boolean) => void }
+  { isRecording, setIsRecording, onRecordingStart, onRecordingEnd, time, uuid }:
+    { isRecording: boolean, setIsRecording: (value: boolean) => void, onRecordingStart: () => void, onRecordingEnd: () => void, time: number, uuid: string }
 ) {
 
   const connectAndSubscribe = async () => {
     try {
-
       const device = await navigator.bluetooth.requestDevice({
         filters: [{ name: 'Arduino' }],
         optionalServices: ['12345678-1234-1234-1234-1234567890ab']
       });
-      
+
       const server = await device.gatt.connect();
       const service = await server.getPrimaryService('12345678-1234-1234-1234-1234567890ab');
       const characteristic = await service.getCharacteristic('abcdefab-1234-1234-1234-abcdefabcdef');
-      
+
       await characteristic.startNotifications();
-      
+
       characteristic.addEventListener('characteristicvaluechanged', (event) => {
         const value = event.target.value;
         const bytes = new Uint8Array(value.buffer);
@@ -133,10 +130,20 @@ function ControlSection(
             </Card>
           </>
         ) : (
-          <EndButton onRecordingEnd={onRecordingEnd} uuid={uuid} open={open} setOpen={setOpen} />
+          <>
+            <Link href={`/project/${uuid}/practice/create/loading`} className=" w-1/2 h-full" onClick={onRecordingEnd}>
+              <Card className="flex flex-col items-center justify-center bg-[red] border-none">
+                <CardHeader className="flex items-center justify-center text-3xl text-white h-20 py-0 w-full">
+                  <CardTitle className="flex items-center justify-center w-full">
+                    완료
+                  </CardTitle>
+                </CardHeader>
+              </Card>
+            </Link>
+          </>
         )
       }
-      <Card className="flex items-center w-1/2">
+      <Card className="flex items-center w-1/2 h-full border-none">
         <CardHeader className="flex flex-row items-center text-text_default text-3xl h-20 py-0 w-full">
           <CardTitle className="flex items-center justify-center w-1/3">
             남은시간
@@ -147,48 +154,6 @@ function ControlSection(
         </CardHeader>
       </Card>
     </div>
-  )
-}
-
-function EndButton(
-  { onRecordingEnd, uuid, open, setOpen }:
-    { onRecordingEnd: () => void, uuid: string, open: boolean, setOpen: (state: boolean) => void }
-) {
-  return (
-    <Dialog open={open} onOpenChange={(state) => { setOpen(state); onRecordingEnd() }}>
-      <DialogTrigger asChild>
-        <Card className="flex flex-col items-center justify-center w-1/2 bg-[red] border-none">
-          <CardHeader className="flex items-center justify-center text-3xl text-white h-20 py-0 w-full">
-            <CardTitle className="flex items-center justify-center w-full">
-              완료
-            </CardTitle>
-          </CardHeader>
-        </Card>
-      </DialogTrigger>
-      <DialogContent className="p-8">
-        <DialogHeader>
-          <DialogTitle className="text-4xl pb-4">연습을 완료하시겠어요?</DialogTitle>
-        </DialogHeader>
-        <div className="flex flex-row gap-4">
-          <Card className="flex flex-col items-center justify-center w-1/2 bg-text_sub">
-            <CardHeader className="flex items-center justify-center text-3xl text-white h-20 py-0 w-full">
-              <CardTitle className="flex items-center justify-center w-full">
-                다시하기
-              </CardTitle>
-            </CardHeader>
-          </Card>
-          <Link href={`/project/${uuid}/practice/create/loading`} className=" w-1/2 h-full">
-            <Card className="flex flex-col items-center justify-center bg-[red]">
-              <CardHeader className="flex items-center justify-center text-3xl text-white h-20 py-0 w-full">
-                <CardTitle className="flex items-center justify-center w-full">
-                  완료
-                </CardTitle>
-              </CardHeader>
-            </Card>
-          </Link>
-        </div>
-      </DialogContent>
-    </Dialog>
   )
 }
 
@@ -207,6 +172,13 @@ function STTSection({
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
 
+  const [wpm, setWpm] = useState(0);
+
+  function timeStringToMs(timeStr: string): number {
+    const [hours, minutes, seconds] = timeStr.split(":").map(Number);
+    return ((hours * 60 + minutes) * 60 + seconds) * 1000;
+  }
+
   useEffect(() => {
     async function enableCamera() {
       try {
@@ -216,7 +188,6 @@ function STTSection({
         });
 
         if (isRecording) {
-          // Audio Context 설정
           const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)({
             sampleRate: 16000,
           });
@@ -238,8 +209,20 @@ function STTSection({
 
           audioSocket.onmessage = (event) => {
             const data = JSON.parse(event.data);
+
             if (data.start_time != null && data.end_time != null && data.transcript) {
-              const { id, start_time: startMs, end_time: endMs, transcript: text } = data;
+              const { id, transcript: text } = data;
+
+              // 문자열 시간을 밀리초로 변환
+              const startMs = timeStringToMs(data.start_time);
+              const endMs = timeStringToMs(data.end_time);
+
+              // WPM 계산
+              const durationMin = (endMs - startMs) / 60000;
+              const wordCount = text.trim().split(/\s+/).length;
+              const wpm = Math.round((wordCount / durationMin) * 10) / 10;
+              setWpm(wpm);
+
               onSttResults((prev) => [...prev, { id, startMs, endMs, text }]);
             }
           };
@@ -320,33 +303,32 @@ function STTSection({
     };
   }, [isRecording, onSttResults]);
 
-  return <></>;
-}
-
-function ScriptSection({ sttResults }: { sttResults: Array<{ startMs: string, endMs: string, text: string }> }) {
   return (
-    <Card className="fixed bottom-4 left-0 w-full">
-      <ScrollArea className="h-48 w-full">
-        {
-          sttResults.slice().reverse().map((item, index) => (
-            <ScriptRow key={index} data={item} />
-          ))
-        }
-        <ScrollBar />
-      </ScrollArea>
-    </Card>
-  )
-}
-
-function ScriptRow({ data }: { data: { startMs: string, endMs: string, text: string } }) {
-  return (
-    <div className="flex flex-row w-full items-center py-2">
-      <CardTitle className="flex items-center justify-center text-4xl text-text_sub px-4">
-        {data.startMs}
-      </CardTitle>
-      <CardTitle className="flex items-center text-4xl text-text_default px-4">
-        {data.text}
-      </CardTitle>
+    <div className="text-white text-2xl">
+      현재 WPM : {wpm}
     </div>
   )
+}
+
+function PPTSection() {
+  const [slide, setSlide] = useState(1);
+
+  const onClick = () => {
+    setSlide((prev) => {
+      if (prev >= 21) return 1;
+      return prev + 1;
+    });
+  }
+
+  return (
+    <Card className="fixed bottom-0 left-0 w-full" onClick={onClick}>
+      <Image
+        src={`/슬라이드${slide}.png`}
+        alt={`Slide ${slide}`}
+        width={1920}
+        height={1080}
+        className="w-full h-auto object-cover rounded-xl"
+      />
+    </Card>
+  );
 }

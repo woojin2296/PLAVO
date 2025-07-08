@@ -87,25 +87,25 @@ export default function Page() {
                 <div className="w-2/4 pr-4">
                   <div className="flex items-center gap-2">
                     <CardDescription className="text-4xl py-4">평균 점수는</CardDescription>
-                    <CardTitle className="text-4xl text-color_main2">{UserStatusData.total_score}점</CardTitle>
+                    <CardTitle className="text-4xl text-color_main2">{Math.round(UserStatusData.total_score)}점</CardTitle>
                     <CardDescription className="text-4xl py-4">입니다.</CardDescription>
                   </div>
                   <div className="grid grid-cols-2">
                     <div className="flex items-center justify-between pr-8">
                       <CardDescription className="text-xl py-4">발화 속도</CardDescription>
-                      <CardTitle className="text-4xl">{UserStatusData.speed_score}</CardTitle>
+                      <CardTitle className="text-4xl">{Math.round(UserStatusData.speed_score)}</CardTitle>
                     </div>
                     <div className="flex items-center justify-between pr-8">
                       <CardDescription className="text-xl py-4">발음 정확도</CardDescription>
-                      <CardTitle className="text-4xl">{UserStatusData.pronunciation_score}</CardTitle>
+                      <CardTitle className="text-4xl">{Math.round(UserStatusData.pronunciation_score)}</CardTitle>
                     </div>
                     <div className="flex items-center justify-between pr-8">
                       <CardDescription className="text-xl py-4">제스처 일치도</CardDescription>
-                      <CardTitle className="text-4xl">{UserStatusData.pose_score}</CardTitle>
+                      <CardTitle className="text-4xl">{Math.round(UserStatusData.pose_score)}</CardTitle>
                     </div>
                     <div className="flex items-center justify-between pr-8">
                       <CardDescription className="text-xl py-4">질의응답 정확도</CardDescription>
-                      <CardTitle className="text-4xl">{UserStatusData.qna_score}</CardTitle>
+                      <CardTitle className="text-4xl">{Math.round(UserStatusData.qna_score)}</CardTitle>
                     </div>
                   </div>
                 </div>

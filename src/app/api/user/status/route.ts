@@ -29,11 +29,11 @@ export async function GET(req: Request) {
       total_projects: projects.length,
       completed_projects: 0,
       practice_counts: practices.length,
-      total_score: projects.reduce((sum, project) => sum + (project.total_score || 0), 0),
-      speed_score: projects.reduce((sum, project) => sum + (project.speed_score || 0), 0),
-      pronunciation_score: projects.reduce((sum, project) => sum + (project.pronunciation_score || 0), 0),
-      pose_score: projects.reduce((sum, project) => sum + (project.pose_score || 0), 0),
-      qna_score: projects.reduce((sum, project) => sum + (project.qna_score || 0), 0),
+      total_score: projects.reduce((sum, project) => sum + (project.total_score || 0), 0) / projects.length || 1,
+      speed_score: projects.reduce((sum, project) => sum + (project.speed_score || 0), 0) / projects.length || 1,
+      pronunciation_score: projects.reduce((sum, project) => sum + (project.pronunciation_score || 0), 0) / projects.length || 1,
+      pose_score: projects.reduce((sum, project) => sum + (project.pose_score || 0), 0) / projects.length || 1,
+      qna_score: projects.reduce((sum, project) => sum + (project.qna_score || 0), 0) / projects.length || 1,
     }, { status: 200 });
 
   } catch (e) {

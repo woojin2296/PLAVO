@@ -9,11 +9,79 @@ import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 
 export default function Page() {
+  const [inputValue, setInputValue] = useState<any>({
+    projectName: "",
+    projectDescription: "",
+    dueDate: "",
+    goalTime: 0,
+    file: "",
+  });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setInputValue({
+        projectName: sessionStorage.getItem("project_name") || "",
+        projectDescription: sessionStorage.getItem("project_description") || "",
+        dueDate: sessionStorage.getItem("project_due_date") || "",
+        goalTime: parseInt(sessionStorage.getItem("project_goal_time") || "0"),
+        file: sessionStorage.getItem("project_file") || "",
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("project_name", inputValue.projectName);
+      sessionStorage.setItem("project_description", inputValue.projectDescription);
+      sessionStorage.setItem("project_due_date", inputValue.dueDate);
+      sessionStorage.setItem("project_goal_time", String(inputValue.goalTime));
+      sessionStorage.setItem("project_file", inputValue.file);
+    }
+  }, [inputValue]);
+
   return (
     <div className="flex flex-col">
       <ProjectCreateHeader />
       <div className="pt-20">
-        <ProjectInfoInputSection />
+        <div className="flex items-end justify-between text-4xl pt-8 p-4 text-text_default">
+          프로젝트 정보를 입력해주세요.
+        </div>
+        <div className="flex flex-col gap-4">
+          <TextInputCard
+            title="프로젝트 이름"
+            value={inputValue.projectName}
+            onValueChange={(value: string) => setInputValue({ ...inputValue, projectName: value })}
+          />
+          <TextInputCard
+            title="프로젝트 설명"
+            value={inputValue.projectDescription}
+            onValueChange={(value: string) => setInputValue({ ...inputValue, projectDescription: value })}
+          />
+          <TimeInputCard
+            title="발표 시간"
+            value={inputValue.goalTime}
+            onValueChange={(value: number) => setInputValue({ ...inputValue, goalTime: value })}
+          />
+          <DateInputCard
+            title="발표 날짜"
+            value={inputValue.dueDate}
+            onValueChange={(value: string) => setInputValue({ ...inputValue, dueDate: value })}
+          />
+          <FileInputCard
+            title="발표 자료"
+            value={inputValue.file}
+            onValueChange={(value: string) => setInputValue({ ...inputValue, file: value })}
+          />
+          <Link href={"/project/create/record"}>
+            <Card className={`bg-color_main1`}>
+              <CardHeader className="flex items-center justify-center">
+                <CardTitle className="flex items-center justify-center text-3xl pt-2 w-full text-white">
+                  첫 연습 시작하기
+                </CardTitle>
+              </CardHeader>
+            </Card>
+          </Link>
+        </div>
       </div>
     </div>
   );
@@ -29,97 +97,14 @@ function ProjectCreateHeader() {
   );
 }
 
-function ProjectInfoInputSection() {
-  const [inputValue, setInputValue] = useState<any>({
-    projectName: "",
-    projectDescription: "",
-    dueDate: "",
-    goalTime: 0,
-  });
-  
-  // 브라우저에서만 초기 sessionStorage 값을 가져오기
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setInputValue({
-        projectName: sessionStorage.getItem("project_name") || "",
-        projectDescription: sessionStorage.getItem("project_description") || "",
-        dueDate: sessionStorage.getItem("project_due_date") || "",
-        goalTime: parseInt(sessionStorage.getItem("project_goal_time") || "0"),
-      });
-    }
-  }, []);
-  
-  // 값이 변경될 때 sessionStorage에 동기화
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("project_name", inputValue.projectName);
-      sessionStorage.setItem("project_description", inputValue.projectDescription);
-      sessionStorage.setItem("project_due_date", inputValue.dueDate);
-      sessionStorage.setItem("project_goal_time", String(inputValue.goalTime));
-    }
-  }, [inputValue]);
-
-  return (
-    <>
-      <div className="flex items-end justify-between text-4xl pt-8 p-4 text-text_default">
-        프로젝트 정보를 입력해주세요.
-      </div>
-      <div className="flex flex-col gap-4">
-        <TextInputCard
-          title="프로젝트 이름"
-          value={inputValue.projectName}
-          onValueChange={(value: string) => setInputValue({ ...inputValue, projectName: value })}
-        />
-        <TextInputCard
-          title="프로젝트 설명"
-          value={inputValue.projectDescription}
-          onValueChange={(value: string) => setInputValue({ ...inputValue, projectDescription: value })}
-          className={`${inputValue.projectName == "" ? "hidden" : ""}`}
-        />
-        <TimeInputCard
-          title="발표 시간"
-          value={inputValue.goalTime}
-          onValueChange={(value: number) => setInputValue({ ...inputValue, goalTime: value })}
-          className={`${inputValue.projectDescription == "" ? "hidden" : ""}`}
-        />
-        <DateInputCard
-          title="발표 날짜"
-          value={inputValue.dueDate}
-          onValueChange={(value: string) => setInputValue({ ...inputValue, dueDate: value })}
-          className={`${inputValue.goalTime == 0 ? "hidden" : ""}`}
-        />
-        <Link href={"/project/create/record"}>
-          <Card className={`${inputValue.dueDate == 0 ? "hidden" : ""} bg-color_main1`}>
-            <CardHeader className="flex items-center justify-center">
-              <CardTitle className="flex items-center justify-center text-3xl pt-2 w-full text-white">
-                첫 연습 시작하기
-              </CardTitle>
-            </CardHeader>
-          </Card>
-        </Link>
-      </div>
-    </>
-  )
-}
-
-function TextInputCard({
-  title,
-  className,
-  value,
-  onValueChange,
-}: {
-  title: string;
-  className?: string;
-  value: string;
-  onValueChange: (v: string) => void;
-}) {
-  const [open, setOpen] = useState(false);
+function TextInputCard({ title, value, onValueChange }: { title: string, value: string, onValueChange: (v: string) => void; }) {
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
-  const [transcript, setTranscript] = useState("눌러서 음성 입력 시작");
+  const [transcript, setTranscript] = useState(value == "" ? "눌러서 음성 입력 시작" : value);
 
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
     if (!SpeechRecognition) {
       alert("이 브라우저는 Web Speech API를 지원하지 않습니다.");
       return;
@@ -131,6 +116,7 @@ function TextInputCard({
     recognition.interimResults = true;
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
+      console.log("음성 인식 결과:", event);
       let result = "";
       for (let i = event.resultIndex; i < event.results.length; ++i) {
         result += event.results[i][0].transcript;
@@ -149,6 +135,12 @@ function TextInputCard({
     recognitionRef.current = recognition;
   }, []);
 
+  useEffect(() => {
+    if (value !== transcript && transcript !== "" && transcript !== "눌러서 음성 입력 시작") {
+      onValueChange(transcript);
+    }
+  }, [transcript]);
+
   const startListening = () => {
     recognitionRef.current?.start();
   };
@@ -158,58 +150,26 @@ function TextInputCard({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Card className={className}>
-          <CardHeader className="flex flex-row justify-between my-4">
-            <CardTitle className="flex text-3xl pt-2 w-full">
-              <div className="text-text_default mr-8 w-1/5">{title}</div>
-              <span className="text-text_sub">
-                {value !== "" ? value : "입력하기"}
-              </span>
-            </CardTitle>
-            <ChevronRight className="w-10 h-10 text-icon_default" />
-          </CardHeader>
-        </Card>
-      </DialogTrigger>
-      <DialogContent className="p-8">
-        <DialogHeader>
-          <DialogTitle className="text-4xl pb-4">프로젝트 이름을 말해주세요.</DialogTitle>
-        </DialogHeader>
-        <Button
-          className="w-full h-[600px] bg-icon_default text-text_default border-none text-2xl hover:bg-icon_selected hover:text-white"
-          onTouchStart={startListening}
-          onTouchEnd={stopListening}
-          onMouseDown={startListening}
-          onMouseUp={stopListening}
-        >
-          {transcript}
-        </Button>
-        <Button
-          className="w-full h-24 bg-color_main1 rounded-xl text-2xl mt-4"
-          onClick={() => {
-            onValueChange(transcript);
-            setOpen(false);
-          }}
-        >
-          적용하기
-        </Button>
-      </DialogContent>
-    </Dialog>
+    <Card
+      className={`group transition-colors duration-100 active:bg-gray-500`}
+      onTouchStart={startListening}
+      onTouchEnd={stopListening}
+      onMouseDown={startListening}
+      onMouseUp={stopListening}
+    >
+      <CardHeader className="flex flex-row justify-between my-4">
+        <CardTitle className="flex text-3xl pt-2 w-full">
+          <div className="text-text_default group-active:text-white mr-8 w-1/5">{title}</div>
+          <span className="text-text_sub group-active:text-white">
+            {transcript}
+          </span>
+        </CardTitle>
+      </CardHeader>
+    </Card>
   );
 }
 
-function TimeInputCard({
-  className,
-  title,
-  value,
-  onValueChange,
-}: {
-  className?: string;
-  title: string;
-  value: number;
-  onValueChange: (v: number) => void;
-}) {
+function TimeInputCard({ title, value, onValueChange }: { title: string, value: number, onValueChange: (v: number) => void }) {
   const [open, setOpen] = useState(false)
   const [tempValue, setTempValue] = useState(value.toString())
 
@@ -226,7 +186,7 @@ function TimeInputCard({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Card className={className}>
+        <Card>
           <CardHeader className="flex flex-row justify-between my-4">
             <CardTitle className="flex text-3xl pt-2 w-full">
               <div className="text-text_default mr-8 w-1/5">{title}</div>
@@ -243,28 +203,28 @@ function TimeInputCard({
           <DialogTitle className="text-4xl pb-4">발표 시간을 입력해주세요.</DialogTitle>
         </DialogHeader>
         <div className="flex flex-row items-center justify-center gap-4 my-16">
-          <Button 
+          <Button
             className="h-24 w-24 bg-color_main1"
             onClick={() => setTempValue((prev) => (parseInt(prev) - 10).toString())}
           >
-              <ChevronsLeft className="w-16 h-16"/>
+            <ChevronsLeft className="w-16 h-16" />
           </Button>
-          <Button 
+          <Button
             className="h-24 w-24 bg-color_main1"
-            onClick={() => setTempValue((prev) => (parseInt(prev) - 1).toString())}  
+            onClick={() => setTempValue((prev) => (parseInt(prev) - 1).toString())}
           >
             <ChevronLeft />
           </Button>
           <span className="text-2xl text-center w-56">{tempValue}분</span>
-          <Button 
+          <Button
             className="h-24 w-24 bg-color_main1"
-            onClick={() => setTempValue((prev) => (parseInt(prev) + 1).toString())}  
+            onClick={() => setTempValue((prev) => (parseInt(prev) + 1).toString())}
           >
             <ChevronRight />
           </Button>
-          <Button 
+          <Button
             className="h-24 w-24 bg-color_main1"
-            onClick={() => setTempValue((prev) => (parseInt(prev) + 10).toString())}  
+            onClick={() => setTempValue((prev) => (parseInt(prev) + 10).toString())}
           >
             <ChevronsRight />
           </Button>
@@ -286,17 +246,7 @@ function TimeInputCard({
   )
 }
 
-function DateInputCard({
-  className,
-  title,
-  value,
-  onValueChange,
-}: {
-  className?: string;
-  title: string;
-  value: string;
-  onValueChange: (v: string) => void;
-}) {
+function DateInputCard({ title, value, onValueChange }: { title: string, value: string, onValueChange: (v: string) => void }) {
   const [open, setOpen] = useState(false)
   const [tempValue, setTempValue] = useState(value)
 
@@ -307,7 +257,7 @@ function DateInputCard({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Card className={className}>
+        <Card>
           <CardHeader className="flex flex-row justify-between my-4">
             <CardTitle className="flex text-3xl pt-2 w-full">
               <span className="text-text_default mr-8 w-1/5">{title}</span>
@@ -343,4 +293,41 @@ function DateInputCard({
       </DialogContent>
     </Dialog>
   )
+}
+
+function FileInputCard({ title, value, onValueChange }: { title: string, value: string, onValueChange: (v: string) => void }) {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      onValueChange(file.name);
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-row justify-between my-4">
+        <CardTitle className="flex text-3xl pt-2 w-full">
+          <div className="text-text_default mr-8 w-1/5">{title}</div>
+          <span className="text-text_sub">
+            {value || "파일을 선택해주세요"}
+          </span>
+        </CardTitle>
+        <input
+          type="file"
+          ref={fileInputRef}
+          className="hidden"
+          onChange={handleFileChange}
+        />
+        <Button
+          variant="outline"
+          className="h-10 px-4 text-icon_default"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          파일 선택
+        </Button>
+      </CardHeader>
+    </Card>
+  );
 }
