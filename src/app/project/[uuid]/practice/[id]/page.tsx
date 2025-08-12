@@ -120,7 +120,7 @@ export default function Page({ params }: { params: { uuid: string, id: string } 
               <CardContent className="flex items-center">
                 <CardTitle className="text-2xl pt-6">
                   잘못된 제스처 수 :
-                  <span className="text-color_main1"> {JSON.parse(data.pose_list).length}</span>
+                  <span className="text-color_main1"> 1</span>
                 </CardTitle>
               </CardContent>
             </Card>
@@ -128,7 +128,16 @@ export default function Page({ params }: { params: { uuid: string, id: string } 
             <Card className="flex flex-col gap-0 text-text_default">
               <CardContent className="pt-6">
                 <CardTitle className="text-2xl pb-2">잘못된 제스처 목록</CardTitle>
-                <CardDescription className="text-2xl">{JSON.parse(data.pose_list).length !== 0 ? data.pose_list : "없음"}</CardDescription>
+
+                <div className="flex flex-col justify-center gap-4">
+                  <video width="390" height="360" controls>
+                    <source src="/video.mp4" type="video/mp4" />
+                    브라우저가 video 태그를 지원하지 않습니다.
+                  </video>
+                  <CardDescription className="text-2xl">제스처 종류 : 뒷짐</CardDescription>
+                  <CardDescription className="text-2xl">타임라인 : 03m 05s ~ 03m 09s</CardDescription>
+                </div>
+                
               </CardContent>
             </Card>
 

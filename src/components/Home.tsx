@@ -24,30 +24,6 @@ import Link from "next/link";
 import { ProjectInfo } from "@/domain/types";
 
 
-export function ProjectPinSection({ data }: { data: ProjectInfo[] }) {
-  return (
-    <>
-      <div className="text-4xl p-4 pt-8 text-bold text-text_default">고정된 프로젝트</div>
-      {
-        data.length === 0 ?
-          <div className="flex items-center justify-center text-2xl text-text_sub my-8 py-8">
-            아직 고정된 프로젝트가 없습니다. 프로젝트를 생성하고 고정해보세요!
-          </div>
-          :
-          <div className="grid grid-cols-2 gap-4">
-            {
-              data.map((project) => (
-                <Link key={project.id} href={`/project/${project.id}`}>
-                  <PinedProjectCard data={project} />
-                </Link>
-              ))
-            }
-          </div>
-      }
-    </>
-  )
-}
-
 export function PinedProjectCard({ data }: { data: ProjectInfo }) {
   return (
     <Card className="relative flex flex-col">

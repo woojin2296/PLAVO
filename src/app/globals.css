@@ -67,15 +67,7 @@
   * {
     @apply border-border;
   }
-  body {
-    @apply bg-background text-foreground;
-    font-family: 'SEBANG_Gothic_Bold', sans-serif;
+  html, body {
+    font-family: 'Pretendard', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
   }
-}
-
-@font-face {
-  font-family: 'SEBANG_Gothic_Bold';
-  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2104@1.0/SEBANG_Gothic_Bold.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
 }

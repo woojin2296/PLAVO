@@ -40,24 +40,36 @@ export default function Page() {
   }, [inputValue]);
 
   return (
-    <div className="flex flex-col">
-      <ProjectCreateHeader />
-      <div className="pt-20">
-        <div className="flex items-end justify-between text-4xl pt-8 p-4 text-text_default">
+    <div className="px-sub">
+      <header className="flex items-center justify-between fixed top-0 left-0 px-toolbar_inner w-full h-component_height z-50 bg-background">
+        <Link href={"/"}>
+          <ChevronLeft className="w-icon h-icon text-icon_default" />
+        </Link>
+        <span className="text-xl text-icon_default">프로젝트 생성</span>
+        <Link href={"/login"}>
+          <House className="w-icon h-icon text-icon_default" />
+        </Link>
+      </header>
+
+      <div className="flex flex-col pt-component_height gap-2">
+
+        <div className="flex items-end justify-between font-bold text-2xl text-text_default pt-component_height">
           프로젝트 정보를 입력해주세요.
         </div>
-        <div className="flex flex-col gap-4">
-          <TextInputCard
-            title="프로젝트 이름"
-            value={inputValue.projectName}
-            onValueChange={(value: string) => setInputValue({ ...inputValue, projectName: value })}
+
+        <div className="flex flex-col">
+          <div className="text-text_default font-bold text-xs pt-8">프로젝트 이름</div>
+          <input 
+            className="border-b-2 border-icon_default font-bold text-2xl bg-transparent h-component_height rounded-none focus:outline-none focus:border-color_main1" 
+            placeholder="프로젝트 이름"
           />
-          <TextInputCard
-            title="프로젝트 설명"
-            value={inputValue.projectDescription}
-            onValueChange={(value: string) => setInputValue({ ...inputValue, projectDescription: value })}
+          <div className="text-text_default font-bold text-xs pt-8">프로젝트 설명</div>
+          <input 
+            className="border-b-2 border-icon_default font-bold text-2xl bg-transparent h-component_height rounded-none focus:outline-none focus:border-color_main1" 
+            placeholder="프로젝트 설명"
           />
-          <TimeInputCard
+
+          {/* <TimeInputCard
             title="발표 시간"
             value={inputValue.goalTime}
             onValueChange={(value: number) => setInputValue({ ...inputValue, goalTime: value })}
@@ -80,20 +92,10 @@ export default function Page() {
                 </CardTitle>
               </CardHeader>
             </Card>
-          </Link>
+          </Link> */}
         </div>
       </div>
     </div>
-  );
-}
-
-function ProjectCreateHeader() {
-  return (
-    <header className="fixed top-0 left-0 px-8 py-4 w-full h-24 z-50 bg-[#F3F4F6] flex items-center justify-between">
-      <Link href={"/"}><ChevronLeft className="w-8 h-8 text-icon_default" /></Link>
-      <span className="text-2xl text-icon_default">프로젝트 생성</span>
-      <Link href={"/"}><House className="w-8 h-8 text-icon_default" /></Link>
-    </header>
   );
 }
 
