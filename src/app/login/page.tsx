@@ -38,15 +38,17 @@ export default function Page() {
   }, [router]);
 
   return (
-    <>
-      <LoginHeader />
+    <div className="px-sub">
+      <header className="fixed top-0 left-0 px-8 py-4 w-full h-24 z-50 bg-[#F3F4F6] flex items-center justify-center">
+        <span className="text-2xl text-icon_default">로그인</span>
+      </header>
       <div className="pt-20">
         <div className="m-20 flex flex-col items-center justify-start">
           <LoginTitle />
           <LoginCard />
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

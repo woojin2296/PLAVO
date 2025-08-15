@@ -1,22 +1,26 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, House } from "lucide-react";
 import Link from "next/link";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { ArrowLeft } from "lucide-react";
+
+type ProjectForm = {
+  projectName: string;
+  projectDescription: string;
+  dueDate: string;
+  goalTime: number;
+};
 
 export default function Page() {
-  const [inputValue, setInputValue] = useState<any>({
+  const [inputValue, setInputValue] = useState<ProjectForm>({
     projectName: "",
     projectDescription: "",
     dueDate: "",
     goalTime: 0,
-    file: "",
   });
 
+  // sessionStorage → state 로드
   useEffect(() => {
     if (typeof window !== "undefined") {
       setInputValue({
@@ -29,6 +33,7 @@ export default function Page() {
     }
   }, []);
 
+  // state → sessionStorage 저장
   useEffect(() => {
     if (typeof window !== "undefined") {
       sessionStorage.setItem("project_name", inputValue.projectName);
@@ -41,295 +46,80 @@ export default function Page() {
 
   return (
     <div className="px-sub">
-      <header className="flex items-center justify-between fixed top-0 left-0 px-toolbar_inner w-full h-component_height z-50 bg-background">
+      <header className="flex items-center gap-6 fixed top-0 left-0 px-toolbar_inner w-full h-component_height z-50 bg-background">
         <Link href={"/"}>
-          <ChevronLeft className="w-icon h-icon text-icon_default" />
+          <ArrowLeft className="w-icon h-icon text-text_default" />
         </Link>
-        <span className="text-xl text-icon_default">프로젝트 생성</span>
-        <Link href={"/login"}>
-          <House className="w-icon h-icon text-icon_default" />
-        </Link>
+        <span className="text-xl text-text_default font-bold">Create Project</span>
       </header>
 
       <div className="flex flex-col pt-component_height gap-2">
-
         <div className="flex items-end justify-between font-bold text-2xl text-text_default pt-component_height">
-          프로젝트 정보를 입력해주세요.
+          Please enter your project information!
         </div>
 
         <div className="flex flex-col">
-          <div className="text-text_default font-bold text-xs pt-8">프로젝트 이름</div>
-          <input 
-            className="border-b-2 border-icon_default font-bold text-2xl bg-transparent h-component_height rounded-none focus:outline-none focus:border-color_main1" 
-            placeholder="프로젝트 이름"
-          />
-          <div className="text-text_default font-bold text-xs pt-8">프로젝트 설명</div>
-          <input 
-            className="border-b-2 border-icon_default font-bold text-2xl bg-transparent h-component_height rounded-none focus:outline-none focus:border-color_main1" 
-            placeholder="프로젝트 설명"
+          {/* Project Name */}
+          <div className="text-text_default font-bold text-xs pt-8">Project Name</div>
+          <input
+            className="border-b-2 border-icon_default font-bold text-xl bg-transparent h-component_height rounded-none focus:outline-none focus:border-color_main1"
+            placeholder="Project Name"
+            value={inputValue.projectName}
+            onChange={(e) =>
+              setInputValue((prev) => ({ ...prev, projectName: e.target.value }))
+            }
           />
 
-          {/* <TimeInputCard
-            title="발표 시간"
-            value={inputValue.goalTime}
-            onValueChange={(value: number) => setInputValue({ ...inputValue, goalTime: value })}
+          {/* Project Description */}
+          <div className="text-text_default font-bold text-xs pt-8">Project Description</div>
+          <input
+            className="border-b-2 border-icon_default font-bold text-xl bg-transparent h-component_height rounded-none focus:outline-none focus:border-color_main1"
+            placeholder="Project Description"
+            value={inputValue.projectDescription}
+            onChange={(e) =>
+              setInputValue((prev) => ({ ...prev, projectDescription: e.target.value }))
+            }
           />
-          <DateInputCard
-            title="발표 날짜"
+
+          {/* Goal Time */}
+          <div className="text-text_default font-bold text-xs pt-8">Goal Time</div>
+          <input
+            className="border-b-2 border-icon_default font-bold text-xl bg-transparent h-component_height rounded-none focus:outline-none focus:border-color_main1"
+            placeholder="Goal Time (in minutes)"
+            type="number"
+            value={inputValue.goalTime === 0 ? "" : String(inputValue.goalTime)}
+            onChange={(e) =>
+              setInputValue((prev) => ({
+                ...prev,
+                goalTime: Number.isNaN(parseInt(e.target.value))
+                  ? 0
+                  : parseInt(e.target.value),
+              }))
+            }
+            min={0}
+          />
+
+          {/* Due Date */}
+          <div className="text-text_default font-bold text-xs pt-8">Due Date</div>
+          <input
+            type="date"
+            lang="en"
             value={inputValue.dueDate}
-            onValueChange={(value: string) => setInputValue({ ...inputValue, dueDate: value })}
+            onChange={(e) =>
+              setInputValue((prev) => ({ ...prev, dueDate: e.target.value }))
+            }
+            className={`border-b-2 border-icon_default font-bold text-xl bg-transparent h-component_height rounded-none focus:outline-none focus:border-color_main1 ${
+              inputValue.dueDate ? "text-text_default" : "text-text_sub"
+            }`}
           />
-          <FileInputCard
-            title="발표 자료"
-            value={inputValue.file}
-            onValueChange={(value: string) => setInputValue({ ...inputValue, file: value })}
-          />
-          <Link href={"/project/create/record"}>
-            <Card className={`bg-color_main1`}>
-              <CardHeader className="flex items-center justify-center">
-                <CardTitle className="flex items-center justify-center text-3xl pt-2 w-full text-white">
-                  첫 연습 시작하기
-                </CardTitle>
-              </CardHeader>
+
+          <Link href={"/project/create/loading"} className="pt-8">
+            <Card className="flex items-center justify-center text-white font-bold bg-color_main1 h-component_height">
+              Create
             </Card>
-          </Link> */}
+          </Link>
         </div>
       </div>
     </div>
-  );
-}
-
-function TextInputCard({ title, value, onValueChange }: { title: string, value: string, onValueChange: (v: string) => void; }) {
-
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
-  const [transcript, setTranscript] = useState(value == "" ? "눌러서 음성 입력 시작" : value);
-
-  useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      alert("이 브라우저는 Web Speech API를 지원하지 않습니다.");
-      return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognition.lang = "ko-KR";
-    recognition.continuous = true;
-    recognition.interimResults = true;
-
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      console.log("음성 인식 결과:", event);
-      let result = "";
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        result += event.results[i][0].transcript;
-      }
-      setTranscript(result);
-    };
-
-    recognition.onerror = (event) => {
-      console.error("음성 인식 오류:", event.error);
-    };
-
-    recognition.onend = () => {
-      console.log("인식 종료됨");
-    };
-
-    recognitionRef.current = recognition;
-  }, []);
-
-  useEffect(() => {
-    if (value !== transcript && transcript !== "" && transcript !== "눌러서 음성 입력 시작") {
-      onValueChange(transcript);
-    }
-  }, [transcript]);
-
-  const startListening = () => {
-    recognitionRef.current?.start();
-  };
-
-  const stopListening = () => {
-    recognitionRef.current?.stop();
-  };
-
-  return (
-    <Card
-      className={`group transition-colors duration-100 active:bg-gray-500`}
-      onTouchStart={startListening}
-      onTouchEnd={stopListening}
-      onMouseDown={startListening}
-      onMouseUp={stopListening}
-    >
-      <CardHeader className="flex flex-row justify-between my-4">
-        <CardTitle className="flex text-3xl pt-2 w-full">
-          <div className="text-text_default group-active:text-white mr-8 w-1/5">{title}</div>
-          <span className="text-text_sub group-active:text-white">
-            {transcript}
-          </span>
-        </CardTitle>
-      </CardHeader>
-    </Card>
-  );
-}
-
-function TimeInputCard({ title, value, onValueChange }: { title: string, value: number, onValueChange: (v: number) => void }) {
-  const [open, setOpen] = useState(false)
-  const [tempValue, setTempValue] = useState(value.toString())
-
-  useEffect(() => {
-    setTempValue(value.toString())
-  }, [value])
-
-  useEffect(() => {
-    if (parseInt(tempValue) < 0) {
-      setTempValue("0");
-    }
-  }, [tempValue]);
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Card>
-          <CardHeader className="flex flex-row justify-between my-4">
-            <CardTitle className="flex text-3xl pt-2 w-full">
-              <div className="text-text_default mr-8 w-1/5">{title}</div>
-              <span className="text-text_sub">
-                {value > 0 ? `${value}분` : "입력하기"}
-              </span>
-            </CardTitle>
-            <ChevronRight className="w-10 h-10 text-icon_default" />
-          </CardHeader>
-        </Card>
-      </DialogTrigger>
-      <DialogContent className="p-8">
-        <DialogHeader>
-          <DialogTitle className="text-4xl pb-4">발표 시간을 입력해주세요.</DialogTitle>
-        </DialogHeader>
-        <div className="flex flex-row items-center justify-center gap-4 my-16">
-          <Button
-            className="h-24 w-24 bg-color_main1"
-            onClick={() => setTempValue((prev) => (parseInt(prev) - 10).toString())}
-          >
-            <ChevronsLeft className="w-16 h-16" />
-          </Button>
-          <Button
-            className="h-24 w-24 bg-color_main1"
-            onClick={() => setTempValue((prev) => (parseInt(prev) - 1).toString())}
-          >
-            <ChevronLeft />
-          </Button>
-          <span className="text-2xl text-center w-56">{tempValue}분</span>
-          <Button
-            className="h-24 w-24 bg-color_main1"
-            onClick={() => setTempValue((prev) => (parseInt(prev) + 1).toString())}
-          >
-            <ChevronRight />
-          </Button>
-          <Button
-            className="h-24 w-24 bg-color_main1"
-            onClick={() => setTempValue((prev) => (parseInt(prev) + 10).toString())}
-          >
-            <ChevronsRight />
-          </Button>
-        </div>
-        <Button
-          className="w-full h-24 bg-color_main1 rounded-xl text-2xl mt-4"
-          onClick={() => {
-            const parsed = parseInt(tempValue)
-            if (!isNaN(parsed) && parsed >= 0) {
-              onValueChange(parsed)
-              setOpen(false)
-            }
-          }}
-        >
-          적용하기
-        </Button>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-function DateInputCard({ title, value, onValueChange }: { title: string, value: string, onValueChange: (v: string) => void }) {
-  const [open, setOpen] = useState(false)
-  const [tempValue, setTempValue] = useState(value)
-
-  useEffect(() => {
-    setTempValue(value)
-  }, [value])
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Card>
-          <CardHeader className="flex flex-row justify-between my-4">
-            <CardTitle className="flex text-3xl pt-2 w-full">
-              <span className="text-text_default mr-8 w-1/5">{title}</span>
-              <span className="text-text_sub">
-                {value !== "" ? value : "입력하기"}
-              </span>
-            </CardTitle>
-            <ChevronRight className="w-10 h-10 text-icon_default" />
-          </CardHeader>
-        </Card>
-      </DialogTrigger>
-      <DialogContent className="p-8">
-        <DialogHeader>
-          <DialogTitle className="text-4xl pb-4">{title}을 선택해주세요.</DialogTitle>
-        </DialogHeader>
-        <Input
-          type="date"
-          className="w-full h-24 text-text_default bg-bg_default rounded-xl text-2xl"
-          value={tempValue}
-          onChange={(e) => setTempValue(e.target.value)}
-        />
-        <Button
-          className="w-full h-24 bg-color_main1 rounded-xl text-2xl mt-4"
-          onClick={() => {
-            if (tempValue) {
-              onValueChange(tempValue)
-              setOpen(false)
-            }
-          }}
-        >
-          적용하기
-        </Button>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-function FileInputCard({ title, value, onValueChange }: { title: string, value: string, onValueChange: (v: string) => void }) {
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      onValueChange(file.name);
-    }
-  };
-
-  return (
-    <Card>
-      <CardHeader className="flex flex-row justify-between my-4">
-        <CardTitle className="flex text-3xl pt-2 w-full">
-          <div className="text-text_default mr-8 w-1/5">{title}</div>
-          <span className="text-text_sub">
-            {value || "파일을 선택해주세요"}
-          </span>
-        </CardTitle>
-        <input
-          type="file"
-          ref={fileInputRef}
-          className="hidden"
-          onChange={handleFileChange}
-        />
-        <Button
-          variant="outline"
-          className="h-10 px-4 text-icon_default"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          파일 선택
-        </Button>
-      </CardHeader>
-    </Card>
   );
 }
