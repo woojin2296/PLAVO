@@ -5,11 +5,8 @@ export async function POST(req: Request) {
   const { email, password, name } = await req.json();
 
   try {
-    
     const result = await createUser({ email, password, name });
-
-    console.log("User Id:", result);
-
+    
     const res = NextResponse.json({ ok: true });
 
     res.cookies.set("user_id", String(result), {

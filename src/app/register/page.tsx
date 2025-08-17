@@ -144,12 +144,6 @@ export default function Page() {
               )}
             </div>
 
-            {err && (
-              <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
-                {err}
-              </div>
-            )}
-
             <div className="space-y-2">
               <span className="text-xs font-semibold text-text_default">Confirm Password</span>
               <div className="relative">
@@ -176,6 +170,12 @@ export default function Page() {
                 <p className="text-xs text-red-500">Passwords do not match.</p>
               )}
             </div>
+
+            {err && (
+              <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+                {err}
+              </div>
+            )}
 
             <Button
               type="submit"

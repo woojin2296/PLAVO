@@ -61,12 +61,30 @@ export async function getProjectById(id: number) {
 
 // Input: user_id
 // Output: Array of Project objects
-export async function getAllProjectsByUserId(id: number) {
+export async function getProjectsByUserId(id: number) {
   if (!id) {
     throw new Error("Missing user ID");
   }
   try {
     const projects = db.prepare("SELECT * FROM projects WHERE user_id = ?").all(id) as Project[];
+    return projects;
+  } catch (error) {
+    throw new Error("Database error: " + String(error));
+  }
+}
+
+// Input: user_id
+// Output: Array of ongoing Project objects (due_date >= today)
+export async function getOngoingProjectsByUserId(id: number) {
+  if (!id) {
+    throw new Error("Missing user ID");
+  }
+  try {
+    const projects = db.prepare(`
+      SELECT * FROM projects 
+      WHERE user_id = ? AND due_date >= DATE('now')
+    `).all(id) as Project[];
+    
     return projects;
   } catch (error) {
     throw new Error("Database error: " + String(error));

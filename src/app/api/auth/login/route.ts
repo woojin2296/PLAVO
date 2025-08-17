@@ -2,13 +2,15 @@ import { User, varifyUser } from "@/lib/users";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  const { user_id } = await req.json();
+  const { email, password } = await req.json();
 
   try {
 
+    const user = await varifyUser(email, password) as User;
+    
     const res = NextResponse.json({ ok: true });
 
-    res.cookies.set("user_id", String(user_id), {
+    res.cookies.set("user_id", String(user.id), {
       httpOnly: true,
       sameSite: "lax",
       path: "/",

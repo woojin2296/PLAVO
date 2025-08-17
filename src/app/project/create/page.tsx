@@ -47,8 +47,8 @@ export default function Page() {
         console.error("Error creating project:", errorData);
         return;
       }
-
       const data = await response.json();
+      console.log("Project created successfully:", data);
       router.push(`/project/${data.project_id}`);
       
     } catch (error) {

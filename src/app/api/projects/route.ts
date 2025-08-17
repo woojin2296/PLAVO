@@ -1,26 +1,36 @@
 import { NextResponse } from "next/server";
-import db from "@/lib/database";
-import { createProject, Project } from "@/lib/projects";
+import { createProject, getOngoingProjectsByUserId, getProjectsByUserId } from "@/lib/projects";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const id = searchParams.get("id");
-
-  if (!id) {
-    return NextResponse.json({ error: "Missing project ID" }, { status: 400 });
-  }
+  const userId = searchParams.get("user_id");
+  const isOngoing = searchParams.get("ongoing");
 
   try {
-    const project = db.prepare("SELECT * FROM projects WHERE id = ?").get(id) as Project;
 
-    if (!project) {
-      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    if (isOngoing === "true") {
+      const projects = await getOngoingProjectsByUserId(Number(userId));
+      return NextResponse.json({ projects }, { status: 200 });
+    }
+    else {
+      const projects = await getProjectsByUserId(Number(userId));
+      return NextResponse.json({ projects }, { status: 200 });
+    }
+    
+  } catch (error: any) {
+
+    if (error.message === "Missing user ID") {
+      return NextResponse.json({ error: "Missing user ID" }, { status: 400 });
+    } 
+    else if (error.message === "Database error") {
+      return NextResponse.json({ error: "Database error", detail: String(error) }, { status: 500 });
+    } 
+    else {
+      return NextResponse.json({ error: "Internal server error", detail: String(error) }, { status: 500 });
     }
 
-    return NextResponse.json({ project }, { status: 200 });
-  } catch (e) {
-    return NextResponse.json({ error: "DB Error", detail: String(e) }, { status: 500 });
   }
+
 }
 
 export async function POST(req: Request) {
@@ -28,7 +38,7 @@ export async function POST(req: Request) {
 
   try {
 
-    const result = createProject({ user_id, name, description, due_date, goal_time });
+    const result = await createProject({ user_id, name, description, due_date, goal_time });
 
     return NextResponse.json({ project_id : result }, { status: 201 });
 

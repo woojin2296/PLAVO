@@ -40,6 +40,7 @@ export async function createUser(userData: {
 
   try {
     const existingUser = db.prepare("SELECT * FROM users WHERE email = ?").get(email) as User;
+
     if (existingUser) {
       throw new Error("User already exists");
     }

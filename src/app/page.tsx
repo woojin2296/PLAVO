@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { SquarePlus, Folder, ChevronRight, NotepadText, Menu } from "lucide-react";
+import { SquarePlus, Folder, ChevronRight, Menu } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
 import { Project } from "@/lib/projects";
@@ -10,35 +10,34 @@ import { Project } from "@/lib/projects";
 export default function Page() {
   const [onGoingProjectData, setOngoingProjectData] = useState<Project[]>([]);
   const [projectCount, setProjectCount] = useState(0);
-  const [avgScore, setAvgScore] = useState(0);
-
   useEffect(() => {
-    const data = [
-      {
-        id: "1",
-        name: "Graduation Project",
-        description: "Development of an AI feedback platform for real-time presentation analysis",
-        due_date: "2025-09-20",
-        last_practiced_at: "2023-11-01",
-      },
-      {
-        id: "2",
-        name: "Metaverse Competition",
-        description: "Technology to enhance user immersion in virtual meeting spaces",
-        due_date: "2025-09-25",
-        last_practiced_at: "2023-11-01",
-      },
-      {
-        id: "3",
-        name: "Industry-Academia Collaboration Project",
-        description: "AI defect detection solution for manufacturing sites",
-        due_date: "2025-09-30",
-        last_practiced_at: "2023-11-01",
-      },
-    ];
-    setOngoingProjectData(data);
-    setProjectCount(data.length);
-    setAvgScore(85);
+    const fetchData = async () => {
+      const userId = await fetch("/api/auth/status")
+        .then((res) => res.json())
+        .then((data) => data.userId);
+
+      const onGoingProjectDataResponse = await fetch(`/api/projects?user_id=${userId}&ongoing=true`);
+      const projectCountResponse = await fetch(`/api/projects?user_id=${userId}&ongoing=false`);
+
+      if (!onGoingProjectDataResponse.ok) {
+        console.error("Failed to fetch ongoing projects");
+        return;
+      }
+      if (!projectCountResponse.ok) {
+        console.error("Failed to fetch project count");
+        return;
+      }
+
+      const onGoingProjectDataJson = await onGoingProjectDataResponse.json();
+      setOngoingProjectData(onGoingProjectDataJson.projects);
+
+      const projectCountJson = await projectCountResponse.json();
+      console.log("Project Count Data:", projectCountJson);
+      setProjectCount(projectCountJson.projects.length);
+    }
+
+    fetchData();
+      
   }, []);
 
   return (
@@ -76,7 +75,13 @@ export default function Page() {
                     <Link key={project.id} href={`/project/${project.id}`}>
                       <div className="flex h-component_height items-center justify-left gap-4">
                         <div className="w-icon_box h-icon_box flex items-center justify-center bg-background rounded-xl">
-                          <span className="font-extrabold text-xs text-red-500">D-10</span>
+                          <span className="font-extrabold text-xs text-red-500">
+                            D
+                            {Math.floor(
+                              (new Date().getTime() - new Date(project.due_date).getTime()) /
+                                (1000 * 60 * 60 * 24)
+                            )}
+                          </span>
                         </div>
                         <div className="flex flex-col items-left">
                           <span className="font-bold text-base text-text_default truncate max-w-[20ch]">
@@ -105,21 +110,6 @@ export default function Page() {
               <span className="font-bold text-base text-text_default"> projects completed!</span>
             </div>
             <span className="font-bold text-xs text-text_sub">View project list</span>
-          </div>
-          <ChevronRight className="w-icon h-icon text-icon_default ml-auto" />
-        </Card>
-
-        <Card className="flex items-center shadow-none border-none p-4 gap-4">
-          <div className="flex items-center justify-center w-icon_box h-icon_box bg-background rounded-xl">
-            <NotepadText className="w-icon h-icon text-color_main1" />
-          </div>
-          <div className="flex h-component_height flex-col justify-center">
-            <div>
-              <span className="font-bold text-base text-text_default">Average Score is </span>
-              <span className="font-bold text-base text-color_main1">{avgScore}</span>
-              <span className="font-bold text-base text-text_default"> points!</span>
-            </div>
-            <span className="font-bold text-xs text-text_sub">View presentation report</span>
           </div>
           <ChevronRight className="w-icon h-icon text-icon_default ml-auto" />
         </Card>

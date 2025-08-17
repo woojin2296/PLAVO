@@ -1,6 +1,5 @@
 "use client";
 
-import { ProjectHeader } from "@/components/Header";
 import { RecentQnASection } from "@/components/Project";
 import {
   Card,
@@ -11,13 +10,12 @@ import {
 } from "@/components/ui/card";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { Separator } from "@/components/ui/separator";
-import { Project } from "@/lib/database";
+import { Project } from "@/lib/projects";
 import {
   ChartPie,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
-  House,
-  MessageCirclePlus,
   ScrollText,
   Settings,
   SquarePlus,
@@ -26,13 +24,13 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CartesianGrid, LabelList, Line, LineChart } from "recharts";
 
-export default function Page({ params }: { params: { projectId: string } }) {
+export default function Page({ params }: { params: { id: string } }) {
   const [projectData, setProjectData] = useState<Project>();
   const [practiceData, setPracticeData] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch(`/api/project?id=${params.projectId}`);
+      const res = await fetch(`/api/projects/${params.id}`);
       const result = await res.json() as { project: Project };
       setProjectData(result.project);
     };
@@ -49,15 +47,50 @@ export default function Page({ params }: { params: { projectId: string } }) {
   }, []);
 
   return (
-    <div className="flex flex-col">
-      <header className="fixed top-0 left-0 px-8 py-4 w-full h-24 z-50 bg-[#F3F4F6] flex items-center justify-between">
-        <Link href={"/"}><ChevronLeft className="w-8 h-8 text-icon_default" /></Link>
-        <span className="text-2xl text-icon_default">프로젝트</span>
-        <Link href={"/"}><House className="w-8 h-8 text-icon_default" /></Link>
+    <div className="px-sub">
+
+      <header className="flex items-center justify-between fixed top-0 left-0 px-toolbar_inner w-full h-component_height z-50 bg-background">
+        <Link href={"/"}><ChevronLeft className="w-icon h-icon text-icon_default" /></Link>
+        <span className="text-xl font-bold text-icon_default">Project</span>
+        <Link href={"/"}><Settings className="w-icon h-icon text-icon_default" /></Link>
       </header>
-      <div className="pt-20">
+
+      <div className="flex flex-col pt-component_height gap-2">
+
+        <div className="p-2 flex flex-col gap-2">
+          <span className="font-extrabold text-sm text-red-500">
+            D
+            {Math.floor(
+              (new Date().getTime() - new Date(String(projectData?.due_date)).getTime()) /
+              (1000 * 60 * 60 * 24)
+            )}
+          </span>
+          <span className="text-xl font-bold text-text_default">
+            {projectData?.name}
+          </span>
+          <span className="text-sm font-bold text-text_sub">
+            {projectData?.description}
+          </span>
+        </div>
+
+        <Card className="flex flex-col mt-2 px-4 py-2 shadow-none border-none">
+          <Link className="flex items-center" href={"/project/create"}>
+            <div className="mr-4 w-icon_box h-icon_box flex items-center justify-center bg-background rounded-xl">
+              <SquarePlus className="w-icon h-icon text-color_main1" />
+            </div>
+            <span className="text-lg font-bold text-color_main1">New Practice</span>
+            <ChevronRight className="w-icon h-icon text-icon_default ml-auto" />
+          </Link>
+        </Card>
+
+        <div className="px-2 pt-4">
+            <div className="text-sm">
+              All <ChevronDown className="w-4 h-4 inline" />
+            </div>
+        </div>
+
         <Card className="flex flex-col gap-0 text-text_default">
-          <CardHeader className="pb-4 flex flex-row items-center justify-between">
+          {/* <CardHeader className="pb-4 flex flex-row items-center justify-between">
             <div>
               <CardTitle className="flex items-end gap-2 text-4xl">
                 {projectData?.name}
@@ -77,7 +110,7 @@ export default function Page({ params }: { params: { projectId: string } }) {
               </span>
               <span className="text-text_sub">&nbsp;남음</span>
             </div>
-          </CardHeader>
+          </CardHeader> */}
           <Separator />
           {/* {data.practice_count == 0 ? (
             <CardContent className="flex items-center justify-center text-2xl text-text_sub my-12 py-14">
@@ -99,7 +132,7 @@ export default function Page({ params }: { params: { projectId: string } }) {
               </div>
             </CardContent>
           )} */}
-          <Separator />
+          {/* <Separator />
           <CardContent className="flex items-center p-0 h-20 text-text_sub text-center text-xl">
             <Link
               href={""}
@@ -125,7 +158,7 @@ export default function Page({ params }: { params: { projectId: string } }) {
               프로젝트 설정 변경하기
             </Link>
           </CardContent>
-          <Separator />
+          <Separator /> */}
           {/* <CardContent className="flex items-center p-0 h-20 text-text_sub text-center text-xl">
             <Link
               href={`/project/${data.uuid}/practice/create`}
@@ -145,7 +178,7 @@ export default function Page({ params }: { params: { projectId: string } }) {
           </CardContent> */}
         </Card>
 
-        <div className="flex items-end justify-between text-4xl pt-8 p-4 text-bold text-text_default">
+        {/* <div className="flex items-end justify-between text-4xl pt-8 p-4 text-bold text-text_default">
           최근 발표 연습 결과
           <Link href={"/project/list"} className="flex items-center">
             <span className="text-xl text-text_sub">전체보기</span>
@@ -168,9 +201,9 @@ export default function Page({ params }: { params: { projectId: string } }) {
               아직 발표 연습을 하지 않았습니다.
             </div>
           )}
-        </div>
+        </div> */}
 
-        <RecentQnASection />
+        {/* <RecentQnASection /> */}
       </div>
     </div>
   );

@@ -14,7 +14,7 @@ export default function Page() {
       headers: { "Content-Type": "application/json" },
     });
     if (res.ok) {
-      router.push("/");
+      router.push("/login");
     }
   };
 
