@@ -2,23 +2,13 @@
 
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Settings, SquarePlus, Folder, ChevronRight, NotepadText } from "lucide-react";
+import { SquarePlus, Folder, ChevronRight, NotepadText, Menu } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
+import { Project } from "@/lib/projects";
 
 export default function Page() {
-  const router = useRouter();
-
-  type ProjectData = {
-    id: string;
-    name: string;
-    description: string;
-    due_date: string;
-    last_practiced_at: string;
-  };
-
-  const [onGoingProjectData, setOngoingProjectData] = useState<ProjectData[]>([]);
+  const [onGoingProjectData, setOngoingProjectData] = useState<Project[]>([]);
   const [projectCount, setProjectCount] = useState(0);
   const [avgScore, setAvgScore] = useState(0);
 
@@ -56,7 +46,7 @@ export default function Page() {
       <header className="flex items-center justify-between fixed top-0 left-0 px-toolbar_inner w-full h-component_height z-50 bg-background">
         <Image src="/logo-sm.svg" alt="Logo" width={22} height={22} />
         <span className="text-xl font-bold text-icon_default">PLAVO</span>
-        <Link href={"/login"}><Settings className="w-icon h-icon text-icon_default" /></Link>
+        <Link href={"/menu"}><Menu className="w-icon h-icon text-icon_default" /></Link>
       </header>
 
       <div className="flex flex-col pt-component_height gap-2">

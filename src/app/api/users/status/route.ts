@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import db from "@/lib/db";
-import { ProjectInfo } from "@/domain/types";
+import db from "@/lib/database";
+import { ProjectInfo } from "@/types/types";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);

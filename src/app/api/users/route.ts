@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import db from "@/lib/db";
+import db from "@/lib/database";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -19,25 +19,6 @@ export async function GET(req: Request) {
       return NextResponse.json({ user }, { status: 200 });
     }
 
-  } catch (e) {
-    return NextResponse.json({ error: "DB Error", detail: String(e) }, { status: 500 });
-  }
-}
-
-export async function POST(req: Request) {
-  const { name, sub } = await req.json();
-
-  if (!name || !sub) {
-    return NextResponse.json({ error: "Missing fields" }, { status: 400 });
-  }
-
-  try {
-    db.prepare(`INSERT INTO users (sub, name) VALUES (?, ?)`).run(sub, name);
-    const user = db
-      .prepare("SELECT * FROM users WHERE sub = ?")
-      .get(sub);
-
-    return NextResponse.json({ user }, { status: 201 });
   } catch (e) {
     return NextResponse.json({ error: "DB Error", detail: String(e) }, { status: 500 });
   }

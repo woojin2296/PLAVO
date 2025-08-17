@@ -1,0 +1,10 @@
+import { NextResponse } from "next/server";
+
+export async function POST(req: Request) {
+  const res = NextResponse.json({ ok: true });
+  res.cookies.set("user_id", "", {
+    maxAge: 0,
+    path: "/",
+  });
+  return res;
+}

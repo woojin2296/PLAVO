@@ -2,7 +2,7 @@ import { ChevronRight } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription } from "./ui/card";
 import { Separator } from "./ui/separator";
 import Link from "next/link";
-import { ProjectInfo } from "@/domain/types";
+import { ProjectInfo } from "@/types/types";
 
 export function ProjectListSection() {
   const data = [

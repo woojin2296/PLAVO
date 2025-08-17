@@ -1,48 +1,61 @@
 "use client";
 
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import { ArrowLeft } from "lucide-react";
-
-type ProjectForm = {
-  projectName: string;
-  projectDescription: string;
-  dueDate: string;
-  goalTime: number;
-};
+import React, { useState } from "react";
+import { ArrowLeft, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
-  const [inputValue, setInputValue] = useState<ProjectForm>({
-    projectName: "",
-    projectDescription: "",
-    dueDate: "",
-    goalTime: 0,
-  });
+  const router = useRouter();
 
-  // sessionStorage → state 로드
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setInputValue({
-        projectName: sessionStorage.getItem("project_name") || "",
-        projectDescription: sessionStorage.getItem("project_description") || "",
-        dueDate: sessionStorage.getItem("project_due_date") || "",
-        goalTime: parseInt(sessionStorage.getItem("project_goal_time") || "0"),
-        file: sessionStorage.getItem("project_file") || "",
+  const [projectName, setProjectName] = useState("");
+  const [projectDescription, setProjectDescription] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [goalTime, setGoalTime] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  const isFormValid =
+    projectName.trim() !== "" &&
+    projectDescription.trim() !== "" &&
+    goalTime > 0 &&
+    dueDate.trim() !== "";
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isFormValid) return;
+
+    setLoading(true);
+    try {
+      const userId = await fetch("/api/auth/status")
+        .then((res) => res.json())
+        .then((data) => data.userId);
+
+      const response = await fetch("/api/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: userId,
+          name: projectName,
+          description: projectDescription,
+          due_date: dueDate,
+          goal_time: goalTime,
+        }),
       });
-    }
-  }, []);
 
-  // state → sessionStorage 저장
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("project_name", inputValue.projectName);
-      sessionStorage.setItem("project_description", inputValue.projectDescription);
-      sessionStorage.setItem("project_due_date", inputValue.dueDate);
-      sessionStorage.setItem("project_goal_time", String(inputValue.goalTime));
-      sessionStorage.setItem("project_file", inputValue.file);
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error creating project:", errorData);
+        return;
+      }
+
+      const data = await response.json();
+      router.push(`/project/${data.project_id}`);
+      
+    } catch (error) {
+      console.error("Error creating project:", error);
     }
-  }, [inputValue]);
+    setLoading(false);
+  };
 
   return (
     <div className="px-sub">
@@ -58,16 +71,14 @@ export default function Page() {
           Please enter your project information!
         </div>
 
-        <div className="flex flex-col">
+        <form className="flex flex-col" onSubmit={handleSubmit}>
           {/* Project Name */}
           <div className="text-text_default font-bold text-xs pt-8">Project Name</div>
           <input
             className="border-b-2 border-icon_default font-bold text-xl bg-transparent h-component_height rounded-none focus:outline-none focus:border-color_main1"
             placeholder="Project Name"
-            value={inputValue.projectName}
-            onChange={(e) =>
-              setInputValue((prev) => ({ ...prev, projectName: e.target.value }))
-            }
+            value={projectName}
+            onChange={(e) => setProjectName(e.target.value)}
           />
 
           {/* Project Description */}
@@ -75,50 +86,48 @@ export default function Page() {
           <input
             className="border-b-2 border-icon_default font-bold text-xl bg-transparent h-component_height rounded-none focus:outline-none focus:border-color_main1"
             placeholder="Project Description"
-            value={inputValue.projectDescription}
-            onChange={(e) =>
-              setInputValue((prev) => ({ ...prev, projectDescription: e.target.value }))
-            }
+            value={projectDescription}
+            onChange={(e) => setProjectDescription(e.target.value)}
           />
 
           {/* Goal Time */}
           <div className="text-text_default font-bold text-xs pt-8">Goal Time</div>
           <input
-            className="border-b-2 border-icon_default font-bold text-xl bg-transparent h-component_height rounded-none focus:outline-none focus:border-color_main1"
+            className={`border-b-2 border-icon_default font-bold text-xl bg-transparent h-component_height rounded-none focus:outline-none focus:border-color_main1 ${
+              goalTime == 0 ? "text-text_sub" : "text-text_default"
+            }`}
             placeholder="Goal Time (in minutes)"
             type="number"
-            value={inputValue.goalTime === 0 ? "" : String(inputValue.goalTime)}
-            onChange={(e) =>
-              setInputValue((prev) => ({
-                ...prev,
-                goalTime: Number.isNaN(parseInt(e.target.value))
-                  ? 0
-                  : parseInt(e.target.value),
-              }))
-            }
+            value={goalTime === 0 ? "" : goalTime}
+            onChange={(e) => setGoalTime(Number(e.target.value))}
             min={0}
           />
 
           {/* Due Date */}
           <div className="text-text_default font-bold text-xs pt-8">Due Date</div>
           <input
+            className={`border-b-2 border-icon_default font-bold text-xl bg-transparent h-component_height rounded-none focus:outline-none focus:border-color_main1 ${
+              dueDate === "" ? "text-text_sub" : "text-text_default"
+            }`}
             type="date"
             lang="en"
-            value={inputValue.dueDate}
-            onChange={(e) =>
-              setInputValue((prev) => ({ ...prev, dueDate: e.target.value }))
-            }
-            className={`border-b-2 border-icon_default font-bold text-xl bg-transparent h-component_height rounded-none focus:outline-none focus:border-color_main1 ${
-              inputValue.dueDate ? "text-text_default" : "text-text_sub"
-            }`}
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
           />
 
-          <Link href={"/project/create/loading"} className="pt-8">
-            <Card className="flex items-center justify-center text-white font-bold bg-color_main1 h-component_height">
-              Create
-            </Card>
-          </Link>
-        </div>
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={!isFormValid || loading}
+            className={`rounded-lg flex items-center justify-center text-white font-bold h-component_height mt-8 ${
+              isFormValid && !loading
+                ? "bg-color_main1 cursor-pointer"
+                : "bg-gray-400 cursor-not-allowed"
+            }`}
+          >
+            {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : "Create Project"}
+          </button>
+        </form>
       </div>
     </div>
   );

@@ -3,24 +3,29 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Page() {
-
   const router = useRouter();
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
+  const [confirmPw, setConfirmPw] = useState("");
 
   const [showPw, setShowPw] = useState(false);
+  const [showConfirmPw, setShowConfirmPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
   const isEmailValid = /^\S+@\S+\.\S+$/.test(email);
   const isPwValid = pw.length >= 6;
+  const isConfirmPwValid = confirmPw === pw;
   const canSubmit = isEmailValid && isPwValid && !loading;
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,10 +34,10 @@ export default function Page() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password: pw }),
+        body: JSON.stringify({ name, email, password: pw }),
       });
 
       if (!res.ok) throw new Error("Invalid credentials");
@@ -40,20 +45,28 @@ export default function Page() {
       router.replace("/");
       
     } catch (error: any) {
-      setErr("Invalid email or password. Please try again.");
+      if (error.message.includes("User already exists")) {
+        setErr("User already exists. Please log in.");
+      }
+      else {
+        setErr("Registration failed. Please try again.");
+      }
       setLoading(false);
     }
-  };
+  }
 
   return (
     <div className="px-sub">
 
-      <header className="flex items-center justify-center fixed top-0 left-0 px-toolbar_inner w-full h-component_height z-50 bg-background">
-        <span className="text-xl font-bold text-icon_default">Login</span>
+      <header className="flex items-center justify-between fixed top-0 left-0 px-toolbar_inner w-full h-component_height z-50 bg-background">
+        <Link href={"/login"}>
+          <ArrowLeft className="w-icon h-icon text-text_default" />
+        </Link>
+        <span className="text-xl font-bold text-icon_default">Register</span>
+        <span className="w-icon"></span>
       </header>
 
       <div className="pt-20 flex flex-col items-left justify-start gap-4">
-
         <div className="flex text-2xl font-bold text-text_default gap-2">
           <Image src="/logo-sm-color1.svg" alt="Logo" width={25} height={25} />
           <span>Welcome to </span>
@@ -62,11 +75,25 @@ export default function Page() {
         </div>
 
         <div className="text-base text-text_sub pb-8">
-          Log in to your account to continue.
+          Create your account and experience personalized AI-driven presentation practice.
         </div>
 
         <div>
           <form onSubmit={handleSubmit} className="space-y-4">
+
+            <div className="space-y-2">
+              <span className="text-xs font-semibold text-text_default">
+                Name
+              </span>
+              <Input
+                id="name"
+                type="name"
+                placeholder="Enter your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="p-0 border-b-2 border-icon_default text-base bg-transparent h-component_height rounded-none focus:outline-none focus:border-color_main1"
+              />
+            </div>
 
             <div className="space-y-2">
               <span className="text-xs font-semibold text-text_default">
@@ -123,18 +150,41 @@ export default function Page() {
               </div>
             )}
 
+            <div className="space-y-2">
+              <span className="text-xs font-semibold text-text_default">Confirm Password</span>
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  type={showConfirmPw ? "text" : "password"}
+                  autoComplete="new-password"
+                  placeholder="••••••••"
+                  value={confirmPw}
+                  onChange={(e) => setConfirmPw(e.target.value)}
+                  aria-invalid={!isConfirmPwValid && confirmPw.length > 0}
+                  className="p-0 border-b-2 border-icon_default text-base bg-transparent h-component_height rounded-none focus:outline-none focus:border-color_main1"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPw((v) => !v)}
+                  className="absolute inset-y-0 right-2 flex items-center px-1 text-icon_default hover:opacity-80"
+                  aria-label={showConfirmPw ? "Hide password" : "Show password"}
+                >
+                  {showConfirmPw ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
+              {!isConfirmPwValid && confirmPw.length > 0 && (
+                <p className="text-xs text-red-500">Passwords do not match.</p>
+              )}
+            </div>
+
             <Button
               type="submit"
               disabled={!canSubmit}
               className="w-full h-12 text-base font-semibold"
             >
-              {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Log In"}
+              {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Register"}
             </Button>
           </form>
-
-          <div className="flex items-center text-xs text-text_sub pt-2">
-            <a href="/register" className="hover:underline ml-auto">Create an account</a>
-          </div>
 
         </div>
       </div>

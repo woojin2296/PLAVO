@@ -6,28 +6,22 @@ const db = new Database(dbPath);
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
-    sub TEXT NOT NULL PRIMARY KEY,
-    name TEXT NOT NULL
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    password TEXT NOT NULL    
   );
 `);
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS projects (
-    uuid TEXT NOT NULL PRIMARY KEY,
-    user_id TEXT NOT NULL,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
     name TEXT NOT NULL,
     description TEXT,
     due_date TEXT,
     goal_time INTEGER,
-    script TEXT,
-    practice_count INTEGER DEFAULT 0,
-    total_score INTEGER DEFAULT 0,
-    speed_score INTEGER DEFAULT 0,
-    pose_score INTEGER DEFAULT 0,
-    pronunciation_score INTEGER DEFAULT 0,
-    qna_score INTEGER DEFAULT 0,
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    last_practiced_at TEXT DEFAULT CURRENT_TIMESTAMP
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
   );
 `);
 

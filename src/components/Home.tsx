@@ -21,7 +21,7 @@ import { ChevronRight, Pin } from "lucide-react";
 import { Separator } from "./ui/separator";
 import React from "react";
 import Link from "next/link";
-import { ProjectInfo } from "@/domain/types";
+import { ProjectInfo } from "@/types/types";
 
 
 export function PinedProjectCard({ data }: { data: ProjectInfo }) {

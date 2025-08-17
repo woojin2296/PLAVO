@@ -1,7 +1,7 @@
 "use client";
 
 import { ProjectHeader } from "@/components/Header";
-import { ProfileScoreChart, RecentQnASection } from "@/components/Project";
+import { RecentQnASection } from "@/components/Project";
 import {
   Card,
   CardContent,
@@ -11,9 +11,12 @@ import {
 } from "@/components/ui/card";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { Separator } from "@/components/ui/separator";
+import { Project } from "@/lib/database";
 import {
   ChartPie,
+  ChevronLeft,
   ChevronRight,
+  House,
   MessageCirclePlus,
   ScrollText,
   Settings,
@@ -23,16 +26,15 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CartesianGrid, LabelList, Line, LineChart } from "recharts";
 
-export default function Page({ params }: { params: { uuid: string } }) {
-  const [data, setData] = useState<any>({});
+export default function Page({ params }: { params: { projectId: string } }) {
+  const [projectData, setProjectData] = useState<Project>();
   const [practiceData, setPracticeData] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch(`/api/project?uuid=${params.uuid}`);
-      const result = await res.json();
-      setData(result.project);
-      console.log("Project data:", result);
+      const res = await fetch(`/api/project?id=${params.projectId}`);
+      const result = await res.json() as { project: Project };
+      setProjectData(result.project);
     };
 
     const fetchPracticeData = async () => {
@@ -43,28 +45,32 @@ export default function Page({ params }: { params: { uuid: string } }) {
     };
 
     fetchData();
-    fetchPracticeData();
-  }, [params.uuid]);
+    // fetchPracticeData();
+  }, []);
 
   return (
     <div className="flex flex-col">
-      <ProjectHeader />
+      <header className="fixed top-0 left-0 px-8 py-4 w-full h-24 z-50 bg-[#F3F4F6] flex items-center justify-between">
+        <Link href={"/"}><ChevronLeft className="w-8 h-8 text-icon_default" /></Link>
+        <span className="text-2xl text-icon_default">프로젝트</span>
+        <Link href={"/"}><House className="w-8 h-8 text-icon_default" /></Link>
+      </header>
       <div className="pt-20">
         <Card className="flex flex-col gap-0 text-text_default">
           <CardHeader className="pb-4 flex flex-row items-center justify-between">
             <div>
               <CardTitle className="flex items-end gap-2 text-4xl">
-                {data.name}
+                {projectData?.name}
               </CardTitle>
               <CardDescription className="text-xl text-text_sub">
-                {data.description}
+                {projectData?.description}
               </CardDescription>
             </div>
             <div className="text-3xl">
               <span className="text-text_sub">프로젝트 완료까지&nbsp;</span>
               <span className="text-color_main1">
                 {Math.floor(
-                  (new Date(data.due_date).getTime() - new Date().getTime()) /
+                  (new Date(projectData?.due_date).getTime() - new Date().getTime()) /
                     (1000 * 60 * 60 * 24)
                 )}
                 일
@@ -73,7 +79,7 @@ export default function Page({ params }: { params: { uuid: string } }) {
             </div>
           </CardHeader>
           <Separator />
-          {data.practice_count == 0 ? (
+          {/* {data.practice_count == 0 ? (
             <CardContent className="flex items-center justify-center text-2xl text-text_sub my-12 py-14">
               아직 연습을 진행하지 않았습니다. 프로젝트를 생성하고 연습을 시작해보세요!
             </CardContent>
@@ -92,7 +98,7 @@ export default function Page({ params }: { params: { uuid: string } }) {
                 <PracticeScoreChart data={practiceData} />
               </div>
             </CardContent>
-          )}
+          )} */}
           <Separator />
           <CardContent className="flex items-center p-0 h-20 text-text_sub text-center text-xl">
             <Link
@@ -120,7 +126,7 @@ export default function Page({ params }: { params: { uuid: string } }) {
             </Link>
           </CardContent>
           <Separator />
-          <CardContent className="flex items-center p-0 h-20 text-text_sub text-center text-xl">
+          {/* <CardContent className="flex items-center p-0 h-20 text-text_sub text-center text-xl">
             <Link
               href={`/project/${data.uuid}/practice/create`}
               className="h-full w-1/2 text-color_main1 flex items-center justify-center"
@@ -136,7 +142,7 @@ export default function Page({ params }: { params: { uuid: string } }) {
               <MessageCirclePlus className="w-8 h-8 text-color_main1 mx-2" />
               새 질의응답 연습 시작하기
             </Link>
-          </CardContent>
+          </CardContent> */}
         </Card>
 
         <div className="flex items-end justify-between text-4xl pt-8 p-4 text-bold text-text_default">
@@ -152,7 +158,7 @@ export default function Page({ params }: { params: { uuid: string } }) {
             practiceData.map((practice, index) => (
               <Link
                 key={practice.id}
-                href={`/project/${params.uuid}/practice/${practice.id}`}
+                href={`/project/${params.projectId}/practice/${practice.id}`}
               >
                 <RecentPracticeCard data={practice} index={index} />
               </Link>

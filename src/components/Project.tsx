@@ -11,7 +11,7 @@ import { ChevronRight } from "lucide-react";
 import { Separator } from "./ui/separator";
 import React from "react";
 import Link from "next/link";
-import { QnAInfo } from "@/domain/types";
+import { QnAInfo } from "@/types/types";
 
 export function RecentQnASection() {
   const data = []
