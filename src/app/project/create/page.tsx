@@ -59,11 +59,12 @@ export default function Page() {
 
   return (
     <div className="px-sub">
-      <header className="flex items-center gap-6 fixed top-0 left-0 px-toolbar_inner w-full h-component_height z-50 bg-background">
+      <header className="flex items-center justify-between text-text_sub gap-6 fixed top-0 left-0 px-toolbar_inner w-full h-component_height z-50 bg-background">
         <Link href={"/"}>
-          <ArrowLeft className="w-icon h-icon text-text_default" />
+          <ArrowLeft className="w-icon h-icon" />
         </Link>
-        <span className="text-xl text-text_default font-bold">Create Project</span>
+        <span className="text-xl font-bold">Create Project</span>
+        <div className="w-icon"></div>
       </header>
 
       <div className="flex flex-col pt-component_height gap-2">

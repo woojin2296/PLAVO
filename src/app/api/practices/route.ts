@@ -1,50 +1,68 @@
+import { createPractice, getPracticeById, getPracticesByProjectId, updatePracticeVideoUrlById } from "@/lib/practices";
 import { NextResponse } from "next/server";
-import db from "@/lib/database";
-
-export async function GET(req: Request) {
-    const { searchParams } = new URL(req.url);
-    const practice_id = searchParams.get("id");
-
-    if (!practice_id) {
-        return NextResponse.json({ error: "Missing practice ID" }, { status: 400 });
-    }
-
-    try {
-        const practice = db
-            .prepare("SELECT * FROM practices WHERE id = ?")
-            .get(practice_id);
-
-        if (!practice) {
-            return NextResponse.json({ error: "Practice not found" }, { status: 404 });
-        }
-
-        return NextResponse.json({ practice }, { status: 200 });
-    } catch (e) {
-        return NextResponse.json({ error: "DB Error", detail: String(e) }, { status: 500 });
-    }
-}
 
 export async function POST(req: Request) {
-    const body = await req.json();
-    const { project_id, user_id, practice_id, total_score, speed_score, pose_score, pronunciation_score, speaking_speed_analysis_average_speed, speaking_speed_analysis_speed_by_time_slot, speaking_speed_analysis_speed_variation, improvements_and_feedback_areas_for_improvement_speaking_speed, improvements_and_feedback_areas_for_improvement_presentation_content, improvements_and_feedback_strengths_speaking_speed, improvements_and_feedback_strengths_presentation_content, additional_practice_recommendations_for_improvement_pronunciation_practice_materials, additional_practice_recommendations_for_improvement_speed_control_practice, recommended_next_steps_set_next_goals, content_feedback_feedback_and_improvements_on_content, pose_list } = body;
-    
-    if (!project_id || !user_id || !practice_id || total_score === undefined || speed_score === undefined || pose_score === undefined || pronunciation_score === undefined || speaking_speed_analysis_average_speed === undefined || speaking_speed_analysis_speed_by_time_slot === undefined || speaking_speed_analysis_speed_variation === undefined || improvements_and_feedback_areas_for_improvement_speaking_speed === undefined || improvements_and_feedback_areas_for_improvement_presentation_content === undefined || improvements_and_feedback_strengths_speaking_speed === undefined || improvements_and_feedback_strengths_presentation_content === undefined || additional_practice_recommendations_for_improvement_pronunciation_practice_materials === undefined || additional_practice_recommendations_for_improvement_speed_control_practice === undefined || recommended_next_steps_set_next_goals === undefined || content_feedback_feedback_and_improvements_on_content === undefined || pose_list === undefined) {
-        return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
-    }
+  const { project_id, type, duration, video_url } = await req.json();
 
-    try {
-        const result = db.prepare(`
-            INSERT INTO practices (id, user_id, project_id, total_score, speed_score, pose_score, pronunciation_score, speaking_speed_analysis_average_speed, speaking_speed_analysis_speed_by_time_slot, speaking_speed_analysis_speed_variation, improvements_and_feedback_areas_for_improvement_speaking_speed, improvements_and_feedback_areas_for_improvement_presentation_content, improvements_and_feedback_strengths_speaking_speed, improvements_and_feedback_strengths_presentation_content, additional_practice_recommendations_for_improvement_pronunciation_practice_materials, additional_practice_recommendations_for_improvement_speed_control_practice, recommended_next_steps_set_next_goals, content_feedback_feedback_and_improvements_on_content, pose_list)
-            VALUES (?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
-            .run(practice_id, user_id, project_id, total_score, speed_score, pose_score, pronunciation_score, speaking_speed_analysis_average_speed, speaking_speed_analysis_speed_by_time_slot, speaking_speed_analysis_speed_variation, improvements_and_feedback_areas_for_improvement_speaking_speed, improvements_and_feedback_areas_for_improvement_presentation_content, improvements_and_feedback_strengths_speaking_speed, improvements_and_feedback_strengths_presentation_content, additional_practice_recommendations_for_improvement_pronunciation_practice_materials, additional_practice_recommendations_for_improvement_speed_control_practice, recommended_next_steps_set_next_goals, content_feedback_feedback_and_improvements_on_content, pose_list);
-        console.log("Practice created with ID:", result);
-        const practice = db
-            .prepare("SELECT * FROM practices WHERE id = ?")
-            .get(practice_id);
-        return NextResponse.json({ practice }, { status: 201 });
+  try {
+    const result = await createPractice({ project_id, type, duration, video_url });
+
+    return new Response(JSON.stringify({ practice_id: result }), { status: 201 });
+
+  } catch (error: any) {
+    if (error.message === "Missing fields") {
+      return new Response(JSON.stringify({ error: "Missing fields" }), { status: 400 });
+    } 
+    else if (error.message.startsWith("Failed to create practice")) {
+      return new Response(JSON.stringify({ error: "Failed to create practice" }), { status: 500 });
     }
-    catch (e) {
-        console.error("DB Error:", e);
-        return NextResponse.json({ error: "DB Error", detail: String(e) }, { status: 500 });
+    else if (error.message.startsWith("Database error")) {
+      return new Response(JSON.stringify({ error: "Database error", detail: String(error) }), { status: 500 });
+    } 
+    else {
+      return new Response(JSON.stringify({ error: "Internal server error", detail: String(error) }), { status: 500 });
     }
+  }
+}
+
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const practiceId = searchParams.get("practice_id");
+
+  try {
+    const practice = await getPracticeById(Number(practiceId));
+    return new Response(JSON.stringify({ practice }), { status: 200 });
+
+  } catch (error: any) {
+    if (error.message === "Missing practice ID") {
+      return new Response(JSON.stringify({ error: "Missing practice ID" }), { status: 400 });
+    }
+    else if (error.message === "Practice not found") {
+      return new Response(JSON.stringify({ error: "Practice not found" }), { status: 404 });
+    } 
+    else if (error.message.startsWith("Database error")) {
+      return new Response(JSON.stringify({ error: "Database error", detail: String(error) }), { status: 500 });
+    } 
+    else {
+      return new Response(JSON.stringify({ error: "Internal server error", detail: String(error) }), { status: 500 });
+    }
+  }
+}
+
+export async function UPDATE(req: Request) {
+  const { id, video_url } = await req.json();
+
+  try {
+    
+    const result = await updatePracticeVideoUrlById(Number(id), video_url);
+    return NextResponse.json({ success: result }, { status: 200 });
+
+  } catch (error: any) {
+    if (error.message === "Missing practice ID or video URL") {
+      return new Response(JSON.stringify({ error: "Missing practice ID or video URL" }), { status: 400 });
+    }
+    else {
+      return new Response(JSON.stringify({ error: "Database error", detail: String(error) }), { status: 500 });
+    }
+  }
 }

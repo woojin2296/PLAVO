@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { SquarePlus, Folder, ChevronRight, Menu } from "lucide-react";
+import { Folder, ChevronRight, Menu, Plus } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
 import { Project } from "@/lib/projects";
@@ -53,7 +53,7 @@ export default function Page() {
         <Card className="flex flex-col p-4 shadow-none border-none">
           <Link className="flex items-center" href={"/project/create"}>
             <div className="mr-4 w-icon_box h-icon_box flex items-center justify-center bg-background rounded-xl">
-              <SquarePlus className="w-icon h-icon text-color_main1" />
+              <Plus className="w-icon h-icon text-color_main1" />
             </div>
             <span className="text-lg font-bold text-color_main1">Start New Project</span>
             <ChevronRight className="w-icon h-icon text-icon_default ml-auto" />
@@ -71,7 +71,7 @@ export default function Page() {
               :
               <div className="flex flex-col">
                 {
-                  onGoingProjectData.map((project) => (
+                  onGoingProjectData.map((project : Project) => (
                     <Link key={project.id} href={`/project/${project.id}`}>
                       <div className="flex h-component_height items-center justify-left gap-4">
                         <div className="w-icon_box h-icon_box flex items-center justify-center bg-background rounded-xl">
