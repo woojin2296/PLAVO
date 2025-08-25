@@ -26,7 +26,16 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env*.local
+.env
+.env.*
+!.env.example
+
+# local database and uploaded media
+data/*.sqlite
+public/*.MOV
+public/*.mp4
+public/video/*
+!public/video/.gitkeep
 
 # vercel
 .vercel
