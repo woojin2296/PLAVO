@@ -1,4 +1,4 @@
-import { User, varifyUser } from "@/lib/users";
+import { User, verifyUser } from "@/lib/users";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -6,7 +6,7 @@ export async function POST(req: Request) {
 
   try {
 
-    const user = await varifyUser(email, password) as User;
+    const user = await verifyUser(email, password) as User;
     
     const res = NextResponse.json({ ok: true });
 
