@@ -1,4 +1,5 @@
-import { User, verifyUser } from "@/lib/users";
+import { AUTH_COOKIE_NAME, createSessionToken, SESSION_TTL_SECONDS } from "@/lib/session";
+import { verifyUser } from "@/lib/users";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -6,15 +7,17 @@ export async function POST(req: Request) {
 
   try {
 
-    const user = await verifyUser(email, password) as User;
+    const user = await verifyUser(email, password);
+    const token = await createSessionToken({ userId: user.id, email: user.email });
     
     const res = NextResponse.json({ ok: true });
 
-    res.cookies.set("user_id", String(user.id), {
+    res.cookies.set(AUTH_COOKIE_NAME, token, {
       httpOnly: true,
       sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
       path: "/",
-      maxAge: 60 * 60 * 24 * 7,
+      maxAge: SESSION_TTL_SECONDS,
     });
 
     return res;

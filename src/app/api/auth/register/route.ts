@@ -1,4 +1,5 @@
 import { createUser } from "@/lib/users";
+import { AUTH_COOKIE_NAME, createSessionToken, SESSION_TTL_SECONDS } from "@/lib/session";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -6,14 +7,16 @@ export async function POST(req: Request) {
 
   try {
     const result = await createUser({ email, password, name });
+    const token = await createSessionToken({ userId: Number(result), email });
     
     const res = NextResponse.json({ ok: true });
 
-    res.cookies.set("user_id", String(result), {
+    res.cookies.set(AUTH_COOKIE_NAME, token, {
       httpOnly: true,
       sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
       path: "/",
-      maxAge: 60 * 60 * 24 * 7,
+      maxAge: SESSION_TTL_SECONDS,
     });
 
     return res;

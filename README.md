@@ -80,4 +80,6 @@ npm install
 npm run dev
 ```
 
+`JWT_SECRET`에는 로컬에서 사용할 32자 이상의 임의 문자열을 설정합니다.
+
 개발 서버 실행 후 브라우저에서 `http://localhost:3000`으로 접속합니다.
