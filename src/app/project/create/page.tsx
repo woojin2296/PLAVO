@@ -26,15 +26,10 @@ export default function Page() {
 
     setLoading(true);
     try {
-      const userId = await fetch("/api/auth/status")
-        .then((res) => res.json())
-        .then((data) => data.userId);
-
       const response = await fetch("/api/projects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id: userId,
           name: projectName,
           description: projectDescription,
           due_date: dueDate,

@@ -12,12 +12,8 @@ export default function Page() {
   const [projectCount, setProjectCount] = useState(0);
   useEffect(() => {
     const fetchData = async () => {
-      const userId = await fetch("/api/auth/status")
-        .then((res) => res.json())
-        .then((data) => data.userId);
-
-      const onGoingProjectDataResponse = await fetch(`/api/projects?user_id=${userId}&ongoing=true`);
-      const projectCountResponse = await fetch(`/api/projects?user_id=${userId}&ongoing=false`);
+      const onGoingProjectDataResponse = await fetch("/api/projects?ongoing=true");
+      const projectCountResponse = await fetch("/api/projects?ongoing=false");
 
       if (!onGoingProjectDataResponse.ok) {
         console.error("Failed to fetch ongoing projects");

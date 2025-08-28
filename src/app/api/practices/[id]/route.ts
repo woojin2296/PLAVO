@@ -1,3 +1,4 @@
+import { isUnauthorizedError, requireUserId } from "@/lib/apiAuth";
 import { getPracticesByProjectId, Practice } from "@/lib/practices";
 import { NextResponse } from "next/server";
 
@@ -5,10 +6,15 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     const { id } = params;
     
     try {
-        const result = await getPracticesByProjectId(Number(id)) as Practice[];
+        const userId = await requireUserId();
+        const result = await getPracticesByProjectId(Number(id), userId) as Practice[];
         return NextResponse.json({ practices: result }, { status: 200 });
     
     } catch (error: any) {
+    
+        if (isUnauthorizedError(error)) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
     
         if (error.message === "Missing project ID") {
             return NextResponse.json({ error: "Missing project ID" }, { status: 400 });

@@ -55,6 +55,34 @@ export async function getProjectById(id: number) {
     }
     return project;
   } catch (error) {
+    if (error instanceof Error && error.message === "Project not found") {
+      throw error;
+    }
+
+    throw new Error("Database error: " + String(error));
+  }
+}
+
+export async function getProjectByIdForUser(id: number, userId: number) {
+  if (!id) {
+    throw new Error("Missing project ID");
+  }
+
+  if (!userId) {
+    throw new Error("Missing user ID");
+  }
+
+  try {
+    const project = db.prepare("SELECT * FROM projects WHERE id = ? AND user_id = ?").get(id, userId) as Project;
+    if (!project) {
+      throw new Error("Project not found");
+    }
+    return project;
+  } catch (error) {
+    if (error instanceof Error && error.message === "Project not found") {
+      throw error;
+    }
+
     throw new Error("Database error: " + String(error));
   }
 }
