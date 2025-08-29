@@ -14,7 +14,7 @@ import Link from "next/link";
 import { QnAInfo } from "@/types/types";
 
 export function RecentQnASection() {
-  const data = []
+  const data: QnAInfo[] = []
   return (
     <>
       <div className="flex items-end justify-between text-4xl pt-8 p-4 text-bold text-text_default">
@@ -103,4 +103,3 @@ export function ProfileScoreChart({ total_score, speed_score, pose_score, qna_sc
     </>
   )
 }
-

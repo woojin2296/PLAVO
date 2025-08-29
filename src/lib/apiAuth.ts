@@ -21,3 +21,7 @@ export async function requireUserId() {
 export function isUnauthorizedError(error: unknown) {
   return error instanceof UnauthorizedError;
 }
+
+export function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
+}

@@ -1,5 +1,4 @@
-import { ChevronLeft, CircleUserRound, House, Search } from "lucide-react";
-import Image from "next/image";
+import { ChevronLeft, House, Search } from "lucide-react";
 import Link from "next/link";
 
 export function ProjectListHeader() {

@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
 
     const video_url = `/video/${name}`;
     return NextResponse.json({ video_url });
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error(e);
     return NextResponse.json({ error: "upload failed" }, { status: 500 });
   }

@@ -1,12 +1,8 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { Practice } from "@/lib/practices";
-import { BookText, ChevronLeft, ChevronRight, Clapperboard, ClipboardPlus, Mic, PersonStanding, Speech, TrendingUp } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { Area, AreaChart, CartesianGrid, Line, LineChart, ReferenceArea, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 export default function Page({ params }: { params: { id: string, practiceId: string } }) {
   const data = [
@@ -48,7 +44,6 @@ export default function Page({ params }: { params: { id: string, practiceId: str
       <div className="pt-component_height py-2">
         {
           data.map((item, index) => {
-            const time = item.end_time - item.start_time;
             return (
               <Card key={index} className="h-full flex flex-row items-center mt-2 py-0 shadow-none border-none gap-2">
                 <div className="w-[5px] h-full p-2 rounded-lg bg-color_main1">&nbsp;</div>

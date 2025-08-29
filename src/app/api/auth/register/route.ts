@@ -1,6 +1,7 @@
 import { createUser } from "@/lib/users";
 import { AUTH_COOKIE_NAME, createSessionToken, SESSION_TTL_SECONDS } from "@/lib/session";
 import { NextResponse } from "next/server";
+import { getErrorMessage } from "@/lib/apiAuth";
 
 export async function POST(req: Request) {
   const { email, password, name } = await req.json();
@@ -21,14 +22,16 @@ export async function POST(req: Request) {
 
     return res;
 
-  } catch (error: any) {
-    if (error.message === "Missing fields") {
+  } catch (error: unknown) {
+    const message = getErrorMessage(error);
+
+    if (message === "Missing fields") {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
-    else if (error.message === "User already exists") {
+    else if (message === "User already exists") {
       return NextResponse.json({ error: "User already exists" }, { status: 409 });
     }
-    else if (error.message === "Failed to create user") {
+    else if (message === "Failed to create user") {
       return NextResponse.json({ error: "Failed to create user" }, { status: 500 });
     }
     else {

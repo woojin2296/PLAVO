@@ -10,7 +10,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Plus,
-  Presentation,
   Settings,
 } from "lucide-react";
 import Link from "next/link";
@@ -36,7 +35,7 @@ export default function Page({ params }: { params: { id: string } }) {
 
     fetchData();
     fetchPracticeData();
-  }, []);
+  }, [params.id]);
 
   return (
     <div className="px-sub">

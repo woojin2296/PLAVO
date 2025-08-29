@@ -4,8 +4,13 @@ import { Separator } from "./ui/separator";
 import Link from "next/link";
 import { ProjectInfo } from "@/types/types";
 
+type ProjectListItem = Omit<ProjectInfo, "uuid"> & {
+  id: string;
+  completed_at: string;
+};
+
 export function ProjectListSection() {
-  const data = [
+  const data: ProjectListItem[] = [
     {
       id: "1",
       name: "졸업작품",
@@ -134,7 +139,7 @@ export function ProjectListSection() {
   )
 }
 
-export function ProjectCard({ data }: { data: ProjectInfo }) {
+export function ProjectCard({ data }: { data: ProjectListItem }) {
   return (
     <Card>
       <Link key={data.id} href={`/project/${data.id}`}>

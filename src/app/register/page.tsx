@@ -40,12 +40,17 @@ export default function Page() {
         body: JSON.stringify({ name, email, password: pw }),
       });
 
-      if (!res.ok) throw new Error("Invalid credentials");
+      if (!res.ok) {
+        const errorData = await res.json() as { error?: string };
+        throw new Error(errorData.error ?? "Registration failed");
+      }
       
       router.replace("/");
       
-    } catch (error: any) {
-      if (error.message.includes("User already exists")) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Registration failed";
+
+      if (message.includes("User already exists")) {
         setErr("User already exists. Please log in.");
       }
       else {

@@ -39,7 +39,7 @@ export default function Page() {
       
       router.replace("/");
       
-    } catch (error: any) {
+    } catch {
       setErr("Invalid email or password. Please try again.");
       setLoading(false);
     }

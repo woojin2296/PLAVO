@@ -27,7 +27,6 @@ export default function Page({ params }: { params: { id: string } }) {
       "video/mp4", // Safari 최신
     ];
     for (const m of cands) {
-      // @ts-ignore
       if (typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported?.(m)) return m;
     }
     return ""; // 빈 문자열이면 브라우저가 기본값 결정
@@ -57,7 +56,7 @@ export default function Page({ params }: { params: { id: string } }) {
         recorderRef.current = null;
       }
     };
-  }, []);
+  }, [streamRef]);
 
   const startRecording = async () => {
     // 카메라 + 마이크 권한
@@ -214,7 +213,7 @@ function FrontCamera({ streamRef }: { streamRef: React.MutableRefObject<MediaStr
       }
     }
     initCamera();
-  }, []);
+  }, [streamRef]);
 
   return <video ref={videoRef} autoPlay playsInline className="w-full h-full" />;
 }

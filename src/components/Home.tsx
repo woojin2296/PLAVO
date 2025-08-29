@@ -186,7 +186,7 @@ export function PracticeCountChart({ data }: { data: number }) {
 
   const totalPractice = React.useMemo(() => {
     return data
-  }, [])
+  }, [data])
 
   return (
     <ChartContainer config={chartConfig} className="aspect-square max-h-[230px]">

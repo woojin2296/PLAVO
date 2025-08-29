@@ -3,18 +3,12 @@
 import {
   Card,
 } from "@/components/ui/card";
-import { Practice } from "@/lib/practices";
-import { Project } from "@/lib/projects";
 import {
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Plus,
-  Presentation,
-  Settings,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
 export default function Page({ params }: { params: { id: string } }) {
   return (

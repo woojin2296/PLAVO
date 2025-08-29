@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createProject, getOngoingProjectsByUserId, getProjectsByUserId } from "@/lib/projects";
-import { isUnauthorizedError, requireUserId } from "@/lib/apiAuth";
+import { getErrorMessage, isUnauthorizedError, requireUserId } from "@/lib/apiAuth";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -18,15 +18,17 @@ export async function GET(req: Request) {
       return NextResponse.json({ projects }, { status: 200 });
     }
     
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (isUnauthorizedError(error)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (error.message === "Missing user ID") {
+    const message = getErrorMessage(error);
+
+    if (message === "Missing user ID") {
       return NextResponse.json({ error: "Missing user ID" }, { status: 400 });
     } 
-    else if (error.message === "Database error") {
+    else if (message.startsWith("Database error")) {
       return NextResponse.json({ error: "Database error", detail: String(error) }, { status: 500 });
     } 
     else {
@@ -47,15 +49,17 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ project_id : result }, { status: 201 });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (isUnauthorizedError(error)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (error.message === "Missing fields") {
+    const message = getErrorMessage(error);
+
+    if (message === "Missing fields") {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
-    else if (error.message === "Failed to create project") {
+    else if (message === "Failed to create project") {
       return NextResponse.json({ error: "Failed to create project" }, { status: 500 });
     }
     else {

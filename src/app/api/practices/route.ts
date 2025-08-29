@@ -1,5 +1,5 @@
-import { createPractice, getPracticeById, getPracticesByProjectId, updatePracticeVideoUrlById } from "@/lib/practices";
-import { isUnauthorizedError, requireUserId } from "@/lib/apiAuth";
+import { createPractice, getPracticeById, updatePracticeVideoUrlById } from "@/lib/practices";
+import { getErrorMessage, isUnauthorizedError, requireUserId } from "@/lib/apiAuth";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -11,21 +11,23 @@ export async function POST(req: Request) {
 
     return new Response(JSON.stringify({ practice_id: result }), { status: 201 });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (isUnauthorizedError(error)) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
     }
 
-    if (error.message === "Missing fields") {
+    const message = getErrorMessage(error);
+
+    if (message === "Missing fields") {
       return new Response(JSON.stringify({ error: "Missing fields" }), { status: 400 });
     } 
-    else if (error.message.startsWith("Project not found")) {
+    else if (message.startsWith("Project not found")) {
       return new Response(JSON.stringify({ error: "Project not found" }), { status: 404 });
     }
-    else if (error.message.startsWith("Failed to create practice")) {
+    else if (message.startsWith("Failed to create practice")) {
       return new Response(JSON.stringify({ error: "Failed to create practice" }), { status: 500 });
     }
-    else if (error.message.startsWith("Database error")) {
+    else if (message.startsWith("Database error")) {
       return new Response(JSON.stringify({ error: "Database error", detail: String(error) }), { status: 500 });
     } 
     else {
@@ -43,18 +45,20 @@ export async function GET(req: Request) {
     const practice = await getPracticeById(Number(practiceId), userId);
     return new Response(JSON.stringify({ practice }), { status: 200 });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (isUnauthorizedError(error)) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
     }
 
-    if (error.message === "Missing practice ID") {
+    const message = getErrorMessage(error);
+
+    if (message === "Missing practice ID") {
       return new Response(JSON.stringify({ error: "Missing practice ID" }), { status: 400 });
     }
-    else if (error.message === "Practice not found") {
+    else if (message === "Practice not found") {
       return new Response(JSON.stringify({ error: "Practice not found" }), { status: 404 });
     } 
-    else if (error.message.startsWith("Database error")) {
+    else if (message.startsWith("Database error")) {
       return new Response(JSON.stringify({ error: "Database error", detail: String(error) }), { status: 500 });
     } 
     else {
@@ -63,7 +67,7 @@ export async function GET(req: Request) {
   }
 }
 
-export async function UPDATE(req: Request) {
+export async function PATCH(req: Request) {
   const { id, video_url } = await req.json();
 
   try {
@@ -72,12 +76,14 @@ export async function UPDATE(req: Request) {
     const result = await updatePracticeVideoUrlById(Number(id), userId, video_url);
     return NextResponse.json({ success: result }, { status: 200 });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (isUnauthorizedError(error)) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
     }
 
-    if (error.message === "Missing practice ID or video URL") {
+    const message = getErrorMessage(error);
+
+    if (message === "Missing practice ID or video URL") {
       return new Response(JSON.stringify({ error: "Missing practice ID or video URL" }), { status: 400 });
     }
     else {
